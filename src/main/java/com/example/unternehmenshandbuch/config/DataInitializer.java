@@ -20,6 +20,7 @@ public class DataInitializer {
 		this.appUserRepository = appUserRepository;
 	}
 
+	@Bean
 	CommandLineRunner init() {
 		return args -> {
 			if (appUserRepository.findByUsername("admin").isEmpty()) {

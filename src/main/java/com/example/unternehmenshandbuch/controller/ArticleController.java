@@ -26,7 +26,7 @@ public class ArticleController implements ArticleResource {
     }
 
 	@Override
-	public ResponseEntity<ArticleResponseDto> createArticle(@RequestBody ArticleRequestDto articleRequestDto) {
+	public ResponseEntity<ArticleResponseDto> createArticle(ArticleRequestDto articleRequestDto) {
 		Article createdArticle = articleService.createArticle(articleRequestDto);
 		return ResponseEntity.ok(articleMapper.mapToDto(createdArticle));
 	}
@@ -73,19 +73,12 @@ public class ArticleController implements ArticleResource {
         return ResponseEntity.ok(articleMapper.mapToDtoList(articles));
     }
 
-//    @Override
-//    public ResponseEntity<ArticleResponseDto> getLatestArticleByPublicId(String publicId) {
-//        Article article = articleService.getLatestArticleByPublicId(publicId);
-//        return ResponseEntity.ok(articleMapper.mapToDto(article));
-//    }
-
     @Override
     public ResponseEntity<List<ArticleResponseDto>> getArticlesEditedByUser(String username) {
         List<Article> articles = articleService.getArticlesByUserAndStatus(username, Article.ArticleStatus.EDITING);
         return ResponseEntity.ok(articleMapper.mapToDtoList(articles));
     }
 
-    //
     public ResponseEntity<ArticleResponseDto> getLatestSubmittedArticleByPublicId(String publicId) {
         Article article = articleService.getLatestSubmittedArticleByPublicId(publicId);
         return ResponseEntity.ok(articleMapper.mapToDto(article));
