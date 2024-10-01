@@ -102,4 +102,7 @@ public interface ArticleResource {
     @GetMapping("/articles/{publicId}/latest-submitted")
     ResponseEntity<ArticleResponseDto> getLatestSubmittedArticleByPublicId(@PathVariable String publicId);
 
+    @GetMapping("/articles/{publicId}/latestWithVersion/{version}")
+    ResponseEntity<ArticleResponseDto> getLatestSubmittedArticleByPublicIdWithVersion(@PathVariable String publicId, @PathVariable Integer version);
+
 }

@@ -84,4 +84,10 @@ public class ArticleController implements ArticleResource {
         return ResponseEntity.ok(articleMapper.mapToDto(article));
     }
 
+    @Override
+    public ResponseEntity<ArticleResponseDto> getLatestSubmittedArticleByPublicIdWithVersion(String publicId, Integer version) {
+        Article article = articleService.getLatestArticleByPublicIdWithVersion(publicId, version);
+        return ResponseEntity.ok(articleMapper.mapToDto(article));
+    }
+
 }

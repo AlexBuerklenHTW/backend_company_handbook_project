@@ -24,4 +24,5 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     List<Article> findByPublicIdAndStatus(String publicId, Article.ArticleStatus articleStatus);
 
+    Article findByPublicIdAndVersion(String publicId, Integer version);
 }

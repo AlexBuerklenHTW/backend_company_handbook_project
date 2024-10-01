@@ -103,7 +103,7 @@ public class ArticleServiceImpl implements ArticleService {
 	@Override
 	public List<Article> getArticlesByRoleAndStatus(String publicId, String role) {
 		ArticleValidationException.validateId(publicId);
-		if (role.equals("USER")) {
+		if (role.equals("ROLE_USER")) {
 			return repository.findByPublicIdAndVersionNotNull(publicId);
 		} else {
 			return repository.findByPublicIdAndStatus(publicId, Article.ArticleStatus.SUBMITTED);
@@ -126,6 +126,11 @@ public class ArticleServiceImpl implements ArticleService {
 		return repository.findFirstByPublicIdOrderByVersionDesc(publicId)
 				.filter(article -> article.getStatus() == Article.ArticleStatus.SUBMITTED)
 				.orElseThrow(() -> new ResourceNotFoundException("No submitted article found with publicId: " + publicId));
+	}
+
+	@Override
+	public Article getLatestArticleByPublicIdWithVersion(String publicId, Integer version) {
+		return repository.findByPublicIdAndVersion(publicId, version);
 	}
 
 }
