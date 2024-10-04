@@ -2,6 +2,8 @@ package com.example.unternehmenshandbuch.persistence;
 
 import com.example.unternehmenshandbuch.model.Article;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,5 +26,10 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     List<Article> findByPublicIdAndStatus(String publicId, Article.ArticleStatus articleStatus);
 
-    Article findByPublicIdAndVersion(String publicId, Integer version);
+    @Query("SELECT a FROM Article a WHERE a.publicId = :publicId AND a.status = 'APPROVED' AND a.version = (SELECT MAX(a2.version) FROM Article a2 WHERE a2.publicId = :publicId AND a2.status = 'APPROVED')")
+    Optional<Article> findLatestApprovedArticleByPublicId(@Param("publicId") String publicId);
+
+    @Query("SELECT a FROM Article a WHERE a.publicId = :publicId AND a.status = 'APPROVED' ORDER BY a.version DESC")
+    List<Article> findAllApprovedArticlesByPublicId(@Param("publicId") String publicId);
+
 }

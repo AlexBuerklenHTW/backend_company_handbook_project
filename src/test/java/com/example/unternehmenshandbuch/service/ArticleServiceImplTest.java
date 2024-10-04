@@ -210,7 +210,7 @@ public class ArticleServiceImplTest {
 	}
 
 	@Test
-	public void testGetLatestSubmittedArticleByPublicId_Success() {
+	public void testGetApprovedArticleByPublicId_AndLastVersion_Success() {
 		Article latestSubmittedArticle = Article.builder()
 				.publicId("test-id")
 				.title("Latest Submitted Title")
@@ -223,7 +223,7 @@ public class ArticleServiceImplTest {
 
 		when(repository.findFirstByPublicIdOrderByVersionDesc(anyString())).thenReturn(Optional.of(latestSubmittedArticle));
 
-		Article result = articleService.getLatestSubmittedArticleByPublicId("test-id");
+		Article result = articleService.getApprovedArticleByPublicIdAndLastVersion("test-id");
 
 		assertThat(result).isNotNull();
 		assertThat(result.getTitle()).isEqualTo("Latest Submitted Title");
@@ -234,10 +234,10 @@ public class ArticleServiceImplTest {
 	}
 
 	@Test
-	public void testGetLatestSubmittedArticleByPublicId_NotFound() {
+	public void testGetApprovedArticleByPublicId_AndLastVersion_NotFound() {
 		when(repository.findFirstByPublicIdOrderByVersionDesc(anyString())).thenReturn(Optional.empty());
 
-		assertThatThrownBy(() -> articleService.getLatestSubmittedArticleByPublicId("non-existent-id"))
+		assertThatThrownBy(() -> articleService.getApprovedArticleByPublicIdAndLastVersion("non-existent-id"))
 				.isInstanceOf(ResourceNotFoundException.class)
 				.hasMessage("No submitted article found with publicId: non-existent-id");
 	}

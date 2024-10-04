@@ -38,9 +38,10 @@ public interface ArticleService {
     Article getLatestArticleByPublicId(String publicId);
 
     @Transactional(readOnly = true)
-    Article getLatestSubmittedArticleByPublicId(String publicId);
+    Article getApprovedArticleByPublicIdAndLastVersion(String publicId);
 
     @Transactional(readOnly = true)
-    Article getLatestArticleByPublicIdWithVersion(String publicId, Integer version);
+    List<Article> getAllApprovedArticlesByPublicId(String publicId);
+
 
 }

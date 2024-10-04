@@ -32,25 +32,19 @@ public class ArticleController implements ArticleResource {
 	}
 
     @Override
-    public ResponseEntity<ArticleResponseDto> getArticleById(String publicId) {
-        Article article = articleService.getArticleById(publicId);
-        return ResponseEntity.ok(articleMapper.mapToDto(article));
-    }
-
-    @Override
     public ResponseEntity<List<ArticleResponseDto>> getArticlesByStatusSubmitted() {
         List<Article> articles = articleService.getArticlesByStatus();
         return ResponseEntity.ok(articleMapper.mapToDtoList(articles));
     }
 
     @Override
-    public ResponseEntity<List<ArticleResponseDto>> getApprovedArticles() {
+    public ResponseEntity<List<ArticleResponseDto>> getArticlesApproved() {
         List<Article> articles = articleService.getApprovedArticles();
         return ResponseEntity.ok(articleMapper.mapToDtoList(articles));
     }
 
     @Override
-    public ResponseEntity<ArticleResponseDto> getLatestArticleByPublicId(String publicId) {
+    public ResponseEntity<ArticleResponseDto> getLatestArticleByPublicIdAndStatusEditedBy(String publicId) {
         Article article = articleService.getLatestArticleByPublicId(publicId);
         return ResponseEntity.ok(articleMapper.mapToDto(article));
     }
@@ -79,15 +73,14 @@ public class ArticleController implements ArticleResource {
         return ResponseEntity.ok(articleMapper.mapToDtoList(articles));
     }
 
-    public ResponseEntity<ArticleResponseDto> getLatestSubmittedArticleByPublicId(String publicId) {
-        Article article = articleService.getLatestSubmittedArticleByPublicId(publicId);
+    public ResponseEntity<ArticleResponseDto> getApprovedArticleByPublicIdAndLastVersion(String publicId) {
+        Article article = articleService.getApprovedArticleByPublicIdAndLastVersion(publicId);
         return ResponseEntity.ok(articleMapper.mapToDto(article));
     }
 
     @Override
-    public ResponseEntity<ArticleResponseDto> getLatestSubmittedArticleByPublicIdWithVersion(String publicId, Integer version) {
-        Article article = articleService.getLatestArticleByPublicIdWithVersion(publicId, version);
-        return ResponseEntity.ok(articleMapper.mapToDto(article));
+    public ResponseEntity<List<ArticleResponseDto>> getAllApprovedArticlesByPublicId(String publicId) {
+        List<Article> articles = articleService.getAllApprovedArticlesByPublicId(publicId);
+        return ResponseEntity.ok(articleMapper.mapToDtoList(articles));
     }
-
 }

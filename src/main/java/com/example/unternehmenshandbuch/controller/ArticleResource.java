@@ -27,15 +27,6 @@ public interface ArticleResource {
     @PostMapping("/articles")
     ResponseEntity<ArticleResponseDto> createArticle(@Valid @RequestBody ArticleRequestDto articleRequestDto);
 
-    @Operation(summary = "Get article by ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Article found", content = @Content(schema = @Schema(implementation = ArticleResponseDto.class))),
-            @ApiResponse(responseCode = "404", description = "Article not found", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @GetMapping("articles/{publicId}")
-    ResponseEntity<ArticleResponseDto> getArticleById(@PathVariable String publicId);
-
     @Operation(summary = "Get all articles")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of articles", content = @Content(schema = @Schema(implementation = ArticleResponseDto.class))),
@@ -79,7 +70,7 @@ public interface ArticleResource {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping("/articles/approved")
-    ResponseEntity<List<ArticleResponseDto>> getApprovedArticles();
+    ResponseEntity<List<ArticleResponseDto>> getArticlesApproved();
 
     @Operation(summary = "Get the latest version of an article by public ID")
     @ApiResponses(value = {
@@ -88,7 +79,7 @@ public interface ArticleResource {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping("/articles/{publicId}/latest")
-    ResponseEntity<ArticleResponseDto> getLatestArticleByPublicId(@PathVariable String publicId);
+    ResponseEntity<ArticleResponseDto> getLatestArticleByPublicIdAndStatusEditedBy(@PathVariable String publicId);
 
     @Operation(summary = "Get articles being edited by a specific user")
     @ApiResponses(value = {
@@ -99,10 +90,10 @@ public interface ArticleResource {
     @GetMapping("/articles/user/{username}")
     ResponseEntity<List<ArticleResponseDto>> getArticlesEditedByUser(@PathVariable String username);
 
-    @GetMapping("/articles/{publicId}/latest-submitted")
-    ResponseEntity<ArticleResponseDto> getLatestSubmittedArticleByPublicId(@PathVariable String publicId);
+    @GetMapping("/articles/{publicId}/approvedArticleByPublicIdAndLastVersion")
+    ResponseEntity<ArticleResponseDto> getApprovedArticleByPublicIdAndLastVersion(@PathVariable String publicId);
 
-    @GetMapping("/articles/{publicId}/latestWithVersion/{version}")
-    ResponseEntity<ArticleResponseDto> getLatestSubmittedArticleByPublicIdWithVersion(@PathVariable String publicId, @PathVariable Integer version);
+    @GetMapping("/articles/{publicId}/approvedArticlesByPublicId")
+    ResponseEntity<List<ArticleResponseDto>> getAllApprovedArticlesByPublicId(@PathVariable String publicId);
 
 }

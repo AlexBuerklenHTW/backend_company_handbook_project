@@ -122,15 +122,13 @@ public class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
-	public Article getLatestSubmittedArticleByPublicId(String publicId) {
-		return repository.findFirstByPublicIdOrderByVersionDesc(publicId)
-				.filter(article -> article.getStatus() == Article.ArticleStatus.SUBMITTED)
-				.orElseThrow(() -> new ResourceNotFoundException("No submitted article found with publicId: " + publicId));
+	public Article getApprovedArticleByPublicIdAndLastVersion(String publicId) {
+		return repository.findLatestApprovedArticleByPublicId(publicId)
+				.orElseThrow(() -> new ResourceNotFoundException("No approved article found with publicId: " + publicId));
 	}
 
 	@Override
-	public Article getLatestArticleByPublicIdWithVersion(String publicId, Integer version) {
-		return repository.findByPublicIdAndVersion(publicId, version);
+	public List<Article> getAllApprovedArticlesByPublicId(String publicId) {
+		return repository.findAllApprovedArticlesByPublicId(publicId);
 	}
-
 }

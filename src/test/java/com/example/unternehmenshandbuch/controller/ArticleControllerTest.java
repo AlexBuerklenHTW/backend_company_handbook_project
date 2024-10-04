@@ -191,7 +191,7 @@ public class ArticleControllerTest {
 
 	@Test
 	@WithMockUser
-	public void testGetApprovedArticles_Success() throws Exception {
+	public void testGetArticles_Approved_Success() throws Exception {
 		Article approvedArticle = Article.builder()
 				.publicId("test-id")
 				.title("Test Title")
@@ -228,7 +228,7 @@ public class ArticleControllerTest {
 
 	@Test
 	@WithMockUser
-	public void testGetApprovedArticles_EmptyList() throws Exception {
+	public void testGetArticles_Approved_EmptyList() throws Exception {
 		when(articleService.getApprovedArticles()).thenReturn(Collections.emptyList());
 
 		mockMvc.perform(get("/articles/approved")
@@ -288,7 +288,7 @@ public class ArticleControllerTest {
 
 	@Test
 	@WithMockUser
-	public void testGetLatestArticleByPublicId_Success() throws Exception {
+	public void testGetLatestArticleByPublicId_AndStatusEditedBy_Success() throws Exception {
 		article.setVersion(2);
 		article.setStatus(Article.ArticleStatus.APPROVED);
 
@@ -323,7 +323,7 @@ public class ArticleControllerTest {
 
 	@Test
 	@WithMockUser
-	public void testGetLatestSubmittedArticleByPublicId_Success() throws Exception {
+	public void testGetApprovedArticleByPublicId_AndLastVersion_Success() throws Exception {
 		Article latestSubmittedArticle = Article.builder()
 				.publicId("test-id")
 				.title("Latest Submitted Title")
@@ -344,7 +344,7 @@ public class ArticleControllerTest {
 				.editedBy("testUser")
 				.build();
 
-		when(articleService.getLatestSubmittedArticleByPublicId(anyString())).thenReturn(latestSubmittedArticle);
+		when(articleService.getApprovedArticleByPublicIdAndLastVersion(anyString())).thenReturn(latestSubmittedArticle);
 		when(articleMapper.mapToDto(any(Article.class))).thenReturn(latestSubmittedArticleResponseDto);
 
 		mockMvc.perform(get("/articles/test-id/latest-submitted")
