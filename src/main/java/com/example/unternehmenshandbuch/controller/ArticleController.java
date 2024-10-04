@@ -73,6 +73,7 @@ public class ArticleController implements ArticleResource {
         return ResponseEntity.ok(articleMapper.mapToDtoList(articles));
     }
 
+    @Override
     public ResponseEntity<ArticleResponseDto> getApprovedArticleByPublicIdAndLastVersion(String publicId) {
         Article article = articleService.getApprovedArticleByPublicIdAndLastVersion(publicId);
         return ResponseEntity.ok(articleMapper.mapToDto(article));
