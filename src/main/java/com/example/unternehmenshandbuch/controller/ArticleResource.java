@@ -96,4 +96,7 @@ public interface ArticleResource {
     @GetMapping("/articles/{publicId}/approvedArticlesByPublicId")
     ResponseEntity<List<ArticleResponseDto>> getAllApprovedArticlesByPublicId(@PathVariable String publicId);
 
+    @GetMapping("/articles/{publicId}/version/{version}")
+    ResponseEntity<ArticleResponseDto> getArticleByPublicIdAndVersion(@PathVariable String publicId, @PathVariable Integer version);
+
 }

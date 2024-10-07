@@ -4,8 +4,8 @@ import com.example.unternehmenshandbuch.model.Article;
 import com.example.unternehmenshandbuch.service.dto.ArticleRequestDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+
 
 @Service
 public interface ArticleService {
@@ -43,5 +43,6 @@ public interface ArticleService {
     @Transactional(readOnly = true)
     List<Article> getAllApprovedArticlesByPublicId(String publicId);
 
-
+    @Transactional(readOnly = true)
+    Article getArticleByPublicIdAndVersion(String publicId, Integer version);
 }

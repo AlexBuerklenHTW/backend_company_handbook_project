@@ -1,7 +1,6 @@
 package com.example.unternehmenshandbuch.controller;
 
 import com.example.unternehmenshandbuch.controller.dto.ArticleResponseDto;
-
 import com.example.unternehmenshandbuch.service.dto.ApprovalRequestDto;
 import com.example.unternehmenshandbuch.service.dto.ArticleRequestDto;
 import com.example.unternehmenshandbuch.mapper.ArticleMapper;
@@ -10,7 +9,6 @@ import com.example.unternehmenshandbuch.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -83,5 +81,11 @@ public class ArticleController implements ArticleResource {
     public ResponseEntity<List<ArticleResponseDto>> getAllApprovedArticlesByPublicId(String publicId) {
         List<Article> articles = articleService.getAllApprovedArticlesByPublicId(publicId);
         return ResponseEntity.ok(articleMapper.mapToDtoList(articles));
+    }
+
+    @Override
+    public ResponseEntity<ArticleResponseDto> getArticleByPublicIdAndVersion(String publicId, Integer version) {
+        Article article = articleService.getArticleByPublicIdAndVersion(publicId, version);
+        return ResponseEntity.ok(articleMapper.mapToDto(article));
     }
 }

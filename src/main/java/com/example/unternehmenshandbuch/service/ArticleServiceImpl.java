@@ -6,7 +6,6 @@ import com.example.unternehmenshandbuch.model.Article;
 import com.example.unternehmenshandbuch.persistence.ArticleRepository;
 import com.example.unternehmenshandbuch.service.dto.ArticleRequestDto;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -130,5 +129,11 @@ public class ArticleServiceImpl implements ArticleService {
 	@Override
 	public List<Article> getAllApprovedArticlesByPublicId(String publicId) {
 		return repository.findAllApprovedArticlesByPublicId(publicId);
+	}
+
+	@Override
+	public Article getArticleByPublicIdAndVersion(String publicId, Integer version) {
+		return repository.findArticleByPublicIdAndVersion(publicId, version)
+				.orElseThrow(() -> new ResourceNotFoundException("No article found with publicId: " + publicId));
 	}
 }
