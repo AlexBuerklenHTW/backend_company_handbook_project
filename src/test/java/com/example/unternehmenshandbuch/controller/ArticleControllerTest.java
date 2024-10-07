@@ -3,6 +3,7 @@ package com.example.unternehmenshandbuch.controller;
 import com.example.unternehmenshandbuch.config.SecurityConfig;
 import com.example.unternehmenshandbuch.controller.dto.ArticleResponseDto;
 import com.example.unternehmenshandbuch.exception.ArticleValidationException;
+import com.example.unternehmenshandbuch.exception.ResourceNotFoundException;
 import com.example.unternehmenshandbuch.mapper.ArticleMapper;
 import com.example.unternehmenshandbuch.model.Article;
 import com.example.unternehmenshandbuch.service.AppUserDetailsServiceImpl;
@@ -20,6 +21,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,8 +31,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = ArticleController.class,
@@ -519,5 +522,70 @@ public class ArticleControllerTest {
                 .andExpect(jsonPath("$.editedBy").value("testUser3"));
     }
 
+    @Test
+    @WithMockUser
+    public void testGetArticleByPublicIdAndVersion_Success() throws Exception {
+        String publicId = "test-id";
+        Integer version = 1;
 
+        when(articleService.getArticleByPublicIdAndVersion(publicId, version)).thenReturn(article);
+        when(articleMapper.mapToDto(article)).thenReturn(articleResponseDto);
+
+        ResultActions result = mockMvc.perform(get("/articles/{publicId}/version/{version}", publicId, version)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.publicId").value("test-id"))
+                .andExpect(jsonPath("$.title").value("Test Title"))
+                .andExpect(jsonPath("$.description").value("Test Description"))
+                .andExpect(jsonPath("$.content").value("Test Content"))
+                .andExpect(jsonPath("$.version").value(1))
+                .andExpect(jsonPath("$.status").value("EDITING"))
+                .andExpect(jsonPath("$.editedBy").value("testUser"))
+                .andDo(print());
+
+        verify(articleService, times(1)).getArticleByPublicIdAndVersion(publicId, version);
+        verify(articleMapper, times(1)).mapToDto(article);
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetArticleByPublicIdAndVersion_NotFound() throws Exception {
+        String publicId = "non-existent-id";
+        Integer version = 1;
+
+        when(articleService.getArticleByPublicIdAndVersion(publicId, version))
+                .thenThrow(new ResourceNotFoundException("Article not found"));
+
+        ResultActions result = mockMvc.perform(get("/articles/{publicId}/version/{version}", publicId, version)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isNotFound())
+                .andExpect(content().string("Article not found"))
+                .andDo(print());
+
+        verify(articleService, times(1)).getArticleByPublicIdAndVersion(publicId, version);
+        verify(articleMapper, times(0)).mapToDto(any());
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetArticleByPublicIdAndVersion_InvalidVersion() throws Exception {
+        String publicId = "test-id";
+        Integer version = -1; // Ungültige Version
+
+        when(articleService.getArticleByPublicIdAndVersion(publicId, version))
+                .thenThrow(new IllegalArgumentException("Version must be positive"));
+
+        ResultActions result = mockMvc.perform(get("/articles/{publicId}/version/{version}", publicId, version)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isBadRequest())
+                .andExpect(content().string("Version must be positive"))
+                .andDo(print());
+
+        verify(articleService, times(1)).getArticleByPublicIdAndVersion(publicId, version);
+        verify(articleMapper, times(0)).mapToDto(any());
+    }
 }
