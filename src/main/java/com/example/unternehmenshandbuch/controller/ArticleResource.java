@@ -43,7 +43,7 @@ public interface ArticleResource {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PutMapping("/articles/{id}")
-    ResponseEntity<ArticleResponseDto> updateArticle(@PathVariable String id, @Valid @RequestBody ArticleRequestDto articleRequestDto);
+    ResponseEntity<ArticleResponseDto> updateArticle(@PathVariable String id, @Valid @RequestBody ArticleRequestDto articleRequestDto, @RequestParam Integer version);
 
     @Operation(summary = "Set approval status of an article")
     @ApiResponses(value = {

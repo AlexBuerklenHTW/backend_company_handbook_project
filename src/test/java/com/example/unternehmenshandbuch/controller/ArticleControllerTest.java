@@ -124,10 +124,11 @@ public class ArticleControllerTest {
                 .editedBy("testUser")
                 .build();
 
-        when(articleService.updateArticle(anyString(), any(ArticleRequestDto.class))).thenReturn(updatedArticle);
+        when(articleService.updateArticle(eq("test-id"), any(ArticleRequestDto.class), eq(1))).thenReturn(updatedArticle);
         when(articleMapper.mapToDto(any(Article.class))).thenReturn(updatedArticleResponseDto);
 
         mockMvc.perform(put("/articles/test-id")
+                        .param("version", "1") // Hinzufügen des 'version'-Parameters
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"title\": \"Updated Title\", \"description\": \"Updated Description\", \"content\": \"Updated Content\", \"editedBy\": \"testUser\"}"))
                 .andExpect(status().isOk())
@@ -138,7 +139,12 @@ public class ArticleControllerTest {
                 .andExpect(jsonPath("$.version").value(2))
                 .andExpect(jsonPath("$.status").value("EDITING"))
                 .andExpect(jsonPath("$.editedBy").value("testUser"));
+
+        verify(articleService, times(1)).updateArticle(eq("test-id"), any(ArticleRequestDto.class), eq(1));
+        verify(articleMapper, times(1)).mapToDto(updatedArticle);
     }
+
+
 
     @Test
     @WithMockUser
@@ -237,14 +243,20 @@ public class ArticleControllerTest {
     @Test
     @WithMockUser
     public void testUpdateArticle_InvalidId() throws Exception {
-        when(articleService.updateArticle(anyString(), any(ArticleRequestDto.class))).thenThrow(new ArticleValidationException("Invalid ID"));
+        when(articleService.updateArticle(eq("invalid-id"), any(ArticleRequestDto.class), eq(1)))
+                .thenThrow(new ArticleValidationException("Invalid ID"));
 
         mockMvc.perform(put("/articles/invalid-id")
+                        .param("version", "1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"title\": \"Updated Title\", \"description\": \"Updated Description\", \"content\": \"Updated Content\", \"editedBy\": \"testUser\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Invalid ID"));
+
+        verify(articleService, times(1)).updateArticle(eq("invalid-id"), any(ArticleRequestDto.class), eq(1));
+        verify(articleMapper, times(0)).mapToDto(any());
     }
+
 
     @Test
     @WithMockUser

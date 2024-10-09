@@ -23,7 +23,7 @@ public interface ArticleService {
     List<Article> getApprovedArticles();
 
     @Transactional
-    Article updateArticle(String id, ArticleRequestDto articleDto);
+    Article updateArticle(String id, ArticleRequestDto articleDto, Integer version);
 
     @Transactional
     Article setApprovalStatus(String id, String status, Integer version, String username);

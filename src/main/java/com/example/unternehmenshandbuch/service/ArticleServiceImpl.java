@@ -50,40 +50,21 @@ public class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
-	public Article updateArticle(String id, ArticleRequestDto articleDto) {
+	public Article updateArticle(String id, ArticleRequestDto articleDto, Integer version) {
 		ArticleValidationException.validateId(id);
 		ArticleValidationException.validateArticleRequestDto(articleDto);
 
 		Article existingArticle = repository.findFirstByPublicId(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Article not found with id: " + id));
 
-		if (existingArticle.getStatus() == Article.ArticleStatus.EDITING ||
-				existingArticle.getStatus() == Article.ArticleStatus.SUBMITTED) {
 			existingArticle.setTitle(articleDto.getTitle());
 			existingArticle.setDescription(articleDto.getDescription());
 			existingArticle.setContent(articleDto.getContent());
 			existingArticle.setStatus(articleDto.getStatus());
 			existingArticle.setEditedBy(articleDto.getEditedBy());
+			existingArticle.setVersion(version);
 			return repository.save(existingArticle);
-		} else {
-
-			int newVersion = repository.findFirstByPublicIdOrderByVersionDesc(id)
-					.map(Article::getVersion)
-					.orElse(0) + 1;
-
-			Article newArticleVersion = Article.builder()
-					.publicId(existingArticle.getPublicId())
-					.title(articleDto.getTitle())
-					.description(articleDto.getDescription())
-					.content(articleDto.getContent())
-					.version(newVersion)
-					.status(Article.ArticleStatus.EDITING)
-					.editedBy(articleDto.getEditedBy())
-					.build();
-
-			return repository.save(newArticleVersion);
 		}
-	}
 
 	@Override
 	public Article setApprovalStatus(String id, String status, Integer version, String username) {

@@ -48,8 +48,8 @@ public class ArticleController implements ArticleResource {
     }
 
     @Override
-    public ResponseEntity<ArticleResponseDto> updateArticle(String id, ArticleRequestDto articleRequestDto) {
-        Article updatedArticle = articleService.updateArticle(id, articleRequestDto);
+    public ResponseEntity<ArticleResponseDto> updateArticle(String id, ArticleRequestDto articleRequestDto, Integer version) {
+        Article updatedArticle = articleService.updateArticle(id, articleRequestDto, version);
         return ResponseEntity.ok(articleMapper.mapToDto(updatedArticle));
     }
 
