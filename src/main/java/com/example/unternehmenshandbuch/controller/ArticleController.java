@@ -84,8 +84,9 @@ public class ArticleController implements ArticleResource {
     }
 
     @Override
-    public ResponseEntity<ArticleResponseDto> getArticleByPublicIdAndVersion(String publicId, Integer version) {
-        Article article = articleService.getArticleByPublicIdAndVersion(publicId, version);
+    public ResponseEntity<ArticleResponseDto> getArticleByPublicIdAndVersionAndStatus(String publicId, Integer version, String status) {
+        Article.ArticleStatus statusInEnum = Article.ArticleStatus.valueOf(status.toUpperCase());
+        Article article = articleService.getArticleByPublicIdAndVersionAndStatus(publicId, version, statusInEnum);
         return ResponseEntity.ok(articleMapper.mapToDto(article));
     }
 }

@@ -113,8 +113,8 @@ public class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
-	public Article getArticleByPublicIdAndVersion(String publicId, Integer version) {
-		return repository.findArticleByPublicIdAndVersion(publicId, version)
+	public Article getArticleByPublicIdAndVersionAndStatus(String publicId, Integer version, Article.ArticleStatus status) {
+		return repository.findArticleByPublicIdAndVersionAndStatus(publicId, version, status)
 				.orElseThrow(() -> new ResourceNotFoundException("No article found with publicId: " + publicId));
 	}
 }
