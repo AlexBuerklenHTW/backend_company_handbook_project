@@ -359,50 +359,52 @@ public class ArticleServiceImplTest {
         verify(repository, never()).findByPublicIdAndVersionNotNull(anyString());
     }
 
-//    @Test
-//    public void testGetArticleByPublicIdAndVersion_AndStatus_Success() {
-//        String publicId = "test-id";
-//        Integer version = 1;
-//
-//        Article expectedArticle = Article.builder()
-//                .publicId(publicId)
-//                .title("Test Title")
-//                .description("Test Description")
-//                .content("Test Content")
-//                .version(version)
-//                .status(Article.ArticleStatus.APPROVED)
-//                .editedBy("user")
-//                .build();
-//
-//        when(repository.findArticleByPublicIdAndVersionAndStatus(publicId, version))
-//                .thenReturn(Optional.of(expectedArticle));
-//
-//        Article actualArticle = articleService.getArticleByPublicIdAndVersionAndStatus(publicId, version);
-//
-//        assertThat(actualArticle).isNotNull();
-//        assertThat(actualArticle.getPublicId()).isEqualTo(publicId);
-//        assertThat(actualArticle.getVersion()).isEqualTo(version);
-//        assertThat(actualArticle.getTitle()).isEqualTo("Test Title");
-//        assertThat(actualArticle.getDescription()).isEqualTo("Test Description");
-//        assertThat(actualArticle.getContent()).isEqualTo("Test Content");
-//        assertThat(actualArticle.getStatus()).isEqualTo(Article.ArticleStatus.APPROVED);
-//        assertThat(actualArticle.getEditedBy()).isEqualTo("user");
-//
-//        verify(repository, times(1)).findArticleByPublicIdAndVersionAndStatus(publicId, version);
-//    }
-//
-//    @Test
-//    public void testGetArticleByPublicIdAndVersion_AndStatus_NotFound() {
-//        String publicId = "non-existent-id";
-//        Integer version = 1;
-//
-//        when(repository.findArticleByPublicIdAndVersionAndStatus(publicId, version))
-//                .thenReturn(Optional.empty());
-//
-//        assertThatThrownBy(() -> articleService.getArticleByPublicIdAndVersionAndStatus(publicId, version))
-//                .isInstanceOf(ResourceNotFoundException.class)
-//                .hasMessage("No article found with publicId: " + publicId);
-//
-//        verify(repository, times(1)).findArticleByPublicIdAndVersionAndStatus(publicId, version);
-//    }
+    @Test
+    public void testGetArticleByPublicIdAndVersion_AndStatus_Success() {
+        String publicId = "test-id";
+        Integer version = 1;
+        String status = "APPROVED";
+
+        Article expectedArticle = Article.builder()
+                .publicId(publicId)
+                .title("Test Title")
+                .description("Test Description")
+                .content("Test Content")
+                .version(version)
+                .status(Article.ArticleStatus.APPROVED)
+                .editedBy("user")
+                .build();
+
+        when(repository.findArticleByPublicIdAndVersionAndStatus(publicId, version, Article.ArticleStatus.valueOf(status)))
+                .thenReturn(Optional.of(expectedArticle));
+
+        Article actualArticle = articleService.getArticleByPublicIdAndVersionAndStatus(publicId, version, Article.ArticleStatus.valueOf(status));
+
+        assertThat(actualArticle).isNotNull();
+        assertThat(actualArticle.getPublicId()).isEqualTo(publicId);
+        assertThat(actualArticle.getVersion()).isEqualTo(version);
+        assertThat(actualArticle.getTitle()).isEqualTo("Test Title");
+        assertThat(actualArticle.getDescription()).isEqualTo("Test Description");
+        assertThat(actualArticle.getContent()).isEqualTo("Test Content");
+        assertThat(actualArticle.getStatus()).isEqualTo(Article.ArticleStatus.APPROVED);
+        assertThat(actualArticle.getEditedBy()).isEqualTo("user");
+
+        verify(repository, times(1)).findArticleByPublicIdAndVersionAndStatus(publicId, version, Article.ArticleStatus.APPROVED);
+    }
+
+    @Test
+    public void testGetArticleByPublicIdAndVersion_AndStatus_NotFound() {
+        String publicId = "non-existent-id";
+        Integer version = 1;
+        String status = "APPROVED";
+
+        when(repository.findArticleByPublicIdAndVersionAndStatus(publicId, version, Article.ArticleStatus.valueOf(status)))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> articleService.getArticleByPublicIdAndVersionAndStatus(publicId, version, Article.ArticleStatus.valueOf(status)))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("No article found with publicId: " + publicId);
+
+        verify(repository, times(1)).findArticleByPublicIdAndVersionAndStatus(publicId, version, Article.ArticleStatus.APPROVED);
+    }
 }

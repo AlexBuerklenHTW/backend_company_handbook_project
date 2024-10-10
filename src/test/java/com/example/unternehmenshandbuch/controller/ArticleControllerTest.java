@@ -534,70 +534,73 @@ public class ArticleControllerTest {
                 .andExpect(jsonPath("$.editedBy").value("testUser3"));
     }
 
-//    @Test
-//    @WithMockUser
-//    public void testGetArticleByPublicIdAndVersion_AndStatus_Success() throws Exception {
-//        String publicId = "test-id";
-//        Integer version = 1;
-//
-//        when(articleService.getArticleByPublicIdAndVersionAndStatus(publicId, version)).thenReturn(article);
-//        when(articleMapper.mapToDto(article)).thenReturn(articleResponseDto);
-//
-//        ResultActions result = mockMvc.perform(get("/articles/{publicId}/version/{version}", publicId, version)
-//                .contentType(MediaType.APPLICATION_JSON));
-//
-//        result.andExpect(status().isOk())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$.publicId").value("test-id"))
-//                .andExpect(jsonPath("$.title").value("Test Title"))
-//                .andExpect(jsonPath("$.description").value("Test Description"))
-//                .andExpect(jsonPath("$.content").value("Test Content"))
-//                .andExpect(jsonPath("$.version").value(1))
-//                .andExpect(jsonPath("$.status").value("EDITING"))
-//                .andExpect(jsonPath("$.editedBy").value("testUser"))
-//                .andDo(print());
-//
-//        verify(articleService, times(1)).getArticleByPublicIdAndVersionAndStatus(publicId, version);
-//        verify(articleMapper, times(1)).mapToDto(article);
-//    }
-//
-//    @Test
-//    @WithMockUser
-//    public void testGetArticleByPublicIdAndVersion_AndStatus_NotFound() throws Exception {
-//        String publicId = "non-existent-id";
-//        Integer version = 1;
-//
-//        when(articleService.getArticleByPublicIdAndVersionAndStatus(publicId, version))
-//                .thenThrow(new ResourceNotFoundException("Article not found"));
-//
-//        ResultActions result = mockMvc.perform(get("/articles/{publicId}/version/{version}", publicId, version)
-//                .contentType(MediaType.APPLICATION_JSON));
-//
-//        result.andExpect(status().isNotFound())
-//                .andExpect(content().string("Article not found"))
-//                .andDo(print());
-//
-//        verify(articleService, times(1)).getArticleByPublicIdAndVersionAndStatus(publicId, version);
-//        verify(articleMapper, times(0)).mapToDto(any());
-//    }
-//
-//    @Test
-//    @WithMockUser
-//    public void testGetArticleByPublicIdAndVersion_InvalidVersionAndStatus() throws Exception {
-//        String publicId = "test-id";
-//        Integer version = -1; // Ungültige Version
-//
-//        when(articleService.getArticleByPublicIdAndVersionAndStatus(publicId, version))
-//                .thenThrow(new IllegalArgumentException("Version must be positive"));
-//
-//        ResultActions result = mockMvc.perform(get("/articles/{publicId}/version/{version}", publicId, version)
-//                .contentType(MediaType.APPLICATION_JSON));
-//
-//        result.andExpect(status().isBadRequest())
-//                .andExpect(content().string("Version must be positive"))
-//                .andDo(print());
-//
-//        verify(articleService, times(1)).getArticleByPublicIdAndVersionAndStatus(publicId, version);
-//        verify(articleMapper, times(0)).mapToDto(any());
-//    }
+    @Test
+    @WithMockUser
+    public void testGetArticleByPublicIdAndVersion_AndStatus_Success() throws Exception {
+        String publicId = "test-id";
+        Integer version = 1;
+        String status = "APPROVED";
+
+        when(articleService.getArticleByPublicIdAndVersionAndStatus(publicId, version, Article.ArticleStatus.valueOf(status))).thenReturn(article);
+        when(articleMapper.mapToDto(article)).thenReturn(articleResponseDto);
+
+        ResultActions result = mockMvc.perform(get("/articles/{publicId}/version/{version}/{status}", publicId, version, status)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.publicId").value("test-id"))
+                .andExpect(jsonPath("$.title").value("Test Title"))
+                .andExpect(jsonPath("$.description").value("Test Description"))
+                .andExpect(jsonPath("$.content").value("Test Content"))
+                .andExpect(jsonPath("$.version").value(1))
+                .andExpect(jsonPath("$.status").value("EDITING"))
+                .andExpect(jsonPath("$.editedBy").value("testUser"))
+                .andDo(print());
+
+        verify(articleService, times(1)).getArticleByPublicIdAndVersionAndStatus(publicId, version, Article.ArticleStatus.APPROVED);
+        verify(articleMapper, times(1)).mapToDto(article);
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetArticleByPublicIdAndVersion_AndStatus_NotFound() throws Exception {
+        String publicId = "non-existent-id";
+        Integer version = 1;
+        String status = "APPROVED";
+
+        when(articleService.getArticleByPublicIdAndVersionAndStatus(publicId, version, Article.ArticleStatus.valueOf(status)))
+                .thenThrow(new ResourceNotFoundException("Article not found"));
+
+        ResultActions result = mockMvc.perform(get("/articles/{publicId}/version/{version}/{status}", publicId, version, status)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isNotFound())
+                .andExpect(content().string("Article not found"))
+                .andDo(print());
+
+        verify(articleService, times(1)).getArticleByPublicIdAndVersionAndStatus(publicId, version, Article.ArticleStatus.APPROVED);
+        verify(articleMapper, times(0)).mapToDto(any());
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetArticleByPublicIdAndVersion_InvalidVersionAndStatus() throws Exception {
+        String publicId = "test-id";
+        Integer version = -1;
+        String status = "APPROVED";
+
+        when(articleService.getArticleByPublicIdAndVersionAndStatus(publicId, version, Article.ArticleStatus.valueOf(status)))
+                .thenThrow(new IllegalArgumentException("Version must be positive"));
+
+        ResultActions result = mockMvc.perform(get("/articles/{publicId}/version/{version}/{status}", publicId, version, status)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isBadRequest())
+                .andExpect(content().string("Version must be positive"))
+                .andDo(print());
+
+        verify(articleService, times(1)).getArticleByPublicIdAndVersionAndStatus(publicId, version, Article.ArticleStatus.APPROVED);
+        verify(articleMapper, times(0)).mapToDto(any());
+    }
 }
