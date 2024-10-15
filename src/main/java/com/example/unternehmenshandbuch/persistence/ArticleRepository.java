@@ -14,6 +14,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     Optional<Article> findFirstByPublicId(String publicId);
 
+    Optional<Article> findFirstByPublicIdAndVersion(String publicId, Integer version);
+
     List<Article> findByPublicIdAndVersionNotNull(String publicId);
 
     List<Article> findByStatus(Article.ArticleStatus status);

@@ -33,10 +33,9 @@ public class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
-	public Article getArticleById(String id) {
-		ArticleValidationException.validateId(id);
-		return repository.findFirstByPublicId(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Article not found with id: " + id));
+	public Article getArticleByPublicIdAndVersion(String publicId, Integer version) {
+		return repository.findFirstByPublicIdAndVersion(publicId, version)
+				.orElseThrow(() -> new ResourceNotFoundException("Article not found with publicId: " + publicId));
 	}
 
 	@Override
@@ -50,12 +49,12 @@ public class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
-	public Article updateArticle(String id, ArticleRequestDto articleDto, Integer version) {
-		ArticleValidationException.validateId(id);
+	public Article updateArticle(String publicId, ArticleRequestDto articleDto, Integer version, Boolean isEditable) {
+		ArticleValidationException.validateId(publicId);
 		ArticleValidationException.validateArticleRequestDto(articleDto);
 
-		Article existingArticle = repository.findFirstByPublicId(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Article not found with id: " + id));
+		Article existingArticle = repository.findFirstByPublicIdAndVersion(publicId, version)
+				.orElseThrow(() -> new ResourceNotFoundException("Article not found with PublicId: " + publicId));
 
 			existingArticle.setTitle(articleDto.getTitle());
 			existingArticle.setDescription(articleDto.getDescription());
@@ -63,16 +62,17 @@ public class ArticleServiceImpl implements ArticleService {
 			existingArticle.setStatus(articleDto.getStatus());
 			existingArticle.setEditedBy(articleDto.getEditedBy());
 			existingArticle.setVersion(version);
+			existingArticle.setIsEditable(isEditable);
 			return repository.save(existingArticle);
 		}
 
 	@Override
-	public Article setApprovalStatus(String id, String status, Integer version, String username) {
-		ArticleValidationException.validateId(id);
+	public Article setApprovalStatus(String publicId, String status, Integer version, String username) {
+		ArticleValidationException.validateId(publicId);
 		ArticleValidationException.validateApprovalStatus(Article.ArticleStatus.valueOf(status));
 
-		Article article = repository.findByPublicIdAndEditedByAndVersionNull(id, username)
-				.orElseThrow(() -> new ResourceNotFoundException("Article not found with id: " + id + " and version: " + version));
+		Article article = repository.findByPublicIdAndEditedByAndVersionNull(publicId, username)
+				.orElseThrow(() -> new ResourceNotFoundException("Article not found with publicId: " + publicId + " and version: " + version));
 
 		article.setStatus(Article.ArticleStatus.valueOf(status.toUpperCase()));
 		article.setVersion(version);

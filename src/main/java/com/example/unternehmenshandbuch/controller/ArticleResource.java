@@ -42,8 +42,8 @@ public interface ArticleResource {
             @ApiResponse(responseCode = "404", description = "Article not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @PutMapping("/articles/{id}")
-    ResponseEntity<ArticleResponseDto> updateArticle(@PathVariable String id, @Valid @RequestBody ArticleRequestDto articleRequestDto, @RequestParam Integer version);
+    @PutMapping("/articles/{id}/{isEditable}")
+    ResponseEntity<ArticleResponseDto> updateArticle(@PathVariable String id, @Valid @RequestBody ArticleRequestDto articleRequestDto, @RequestParam Integer version, @PathVariable Boolean isEditable);
 
     @Operation(summary = "Set approval status of an article")
     @ApiResponses(value = {
@@ -98,5 +98,8 @@ public interface ArticleResource {
 
     @GetMapping("/articles/{publicId}/version/{version}/{status}")
     ResponseEntity<ArticleResponseDto> getArticleByPublicIdAndVersionAndStatus(@PathVariable String publicId, @PathVariable Integer version, @PathVariable String status);
+
+    @GetMapping("/articles/{publicId}/{version}")
+    ResponseEntity<ArticleResponseDto> getArticleByPublicIdAndVersion(@PathVariable String publicId, @PathVariable Integer version);
 
 }

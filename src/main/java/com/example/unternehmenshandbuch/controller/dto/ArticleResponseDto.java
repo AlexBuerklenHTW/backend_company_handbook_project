@@ -20,4 +20,5 @@ public class ArticleResponseDto {
     private Article.ArticleStatus status;
     private String editedBy;
     private List<ArticleResponseDto> versions;
+    private Boolean isEditable;
 }

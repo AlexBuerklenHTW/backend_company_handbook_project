@@ -84,30 +84,6 @@ public class ArticleServiceImplTest {
 
 
     @Test
-    public void testGetArticleById_Success() {
-        when(repository.findFirstByPublicId(anyString())).thenReturn(Optional.of(article));
-
-        Article foundArticle = articleService.getArticleById("test-id");
-
-        assertThat(foundArticle).isNotNull();
-        assertThat(foundArticle.getPublicId()).isEqualTo("test-id");
-        assertThat(foundArticle.getTitle()).isEqualTo("Test Title");
-        assertThat(foundArticle.getDescription()).isEqualTo("Test Description");
-        assertThat(foundArticle.getContent()).isEqualTo("Test Content");
-        assertThat(foundArticle.getVersion()).isEqualTo(null);
-        assertThat(foundArticle.getStatus()).isEqualTo(Article.ArticleStatus.EDITING);
-    }
-
-    @Test
-    public void testGetArticleById_NotFound() {
-        when(repository.findFirstByPublicId(anyString())).thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> articleService.getArticleById("non-existent-id"))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage("Article not found with id: non-existent-id");
-    }
-
-    @Test
     public void testGetAllArticles_Success() {
         when(repository.findByStatus(Article.ArticleStatus.SUBMITTED)).thenReturn(Collections.singletonList(article));
 
@@ -187,72 +163,6 @@ public class ArticleServiceImplTest {
         assertThat(articles).hasSize(1);
         assertThat(articles.get(0)).isEqualTo(article);
     }
-
-    @Test
-    public void testUpdateArticle_CompleteScenario() {
-        ArticleRequestDto articleRequestDto = ArticleRequestDto.builder()
-                .title("Updated Title")
-                .description("Updated Description")
-                .content("Updated Content")
-                .status(Article.ArticleStatus.SUBMITTED)
-                .editedBy("user123")
-                .build();
-
-        Article existingArticle = Article.builder()
-                .publicId("test-id")
-                .title("Old Title")
-                .description("Old Description")
-                .content("Old Content")
-                .version(1)  // Initial version
-                .status(Article.ArticleStatus.EDITING)
-                .editedBy("user456")
-                .build();
-
-
-        Article expectedUpdatedArticle = Article.builder()
-                .publicId("test-id")
-                .title("Updated Title")
-                .description("Updated Description")
-                .content("Updated Content")
-                .version(2)
-                .status(Article.ArticleStatus.SUBMITTED)
-                .editedBy("user123")
-                .build();
-
-
-        when(repository.findFirstByPublicId("test-id")).thenReturn(Optional.of(existingArticle));
-        when(repository.save(any(Article.class))).thenReturn(expectedUpdatedArticle);
-
-
-        Article result = articleService.updateArticle("test-id", articleRequestDto, 2);
-
-
-        assertThat(result).isNotNull();
-        assertThat(result.getPublicId()).isEqualTo("test-id");
-        assertThat(result.getTitle()).isEqualTo("Updated Title");
-        assertThat(result.getDescription()).isEqualTo("Updated Description");
-        assertThat(result.getContent()).isEqualTo("Updated Content");
-        assertThat(result.getVersion()).isEqualTo(2);
-        assertThat(result.getStatus()).isEqualTo(Article.ArticleStatus.SUBMITTED);
-        assertThat(result.getEditedBy()).isEqualTo("user123");
-
-        ArgumentCaptor<Article> articleCaptor = ArgumentCaptor.forClass(Article.class);
-
-
-        verify(repository).findFirstByPublicId("test-id");
-        verify(repository).save(articleCaptor.capture());
-
-
-        Article savedArticle = articleCaptor.getValue();
-        assertThat(savedArticle.getPublicId()).isEqualTo("test-id");
-        assertThat(savedArticle.getTitle()).isEqualTo("Updated Title");
-        assertThat(savedArticle.getDescription()).isEqualTo("Updated Description");
-        assertThat(savedArticle.getContent()).isEqualTo("Updated Content");
-        assertThat(savedArticle.getVersion()).isEqualTo(2);
-        assertThat(savedArticle.getStatus()).isEqualTo(Article.ArticleStatus.SUBMITTED);
-        assertThat(savedArticle.getEditedBy()).isEqualTo("user123");
-    }
-
 
 
     @Test
@@ -406,5 +316,101 @@ public class ArticleServiceImplTest {
                 .hasMessage("No article found with publicId: " + publicId);
 
         verify(repository, times(1)).findArticleByPublicIdAndVersionAndStatus(publicId, version, Article.ArticleStatus.APPROVED);
+    }
+
+    @Test
+    public void testUpdateArticle_Success() {
+        ArticleRequestDto articleRequestDto = ArticleRequestDto.builder()
+                .title("Updated Title")
+                .description("Updated Description")
+                .content("Updated Content")
+                .editedBy("user")
+                .status(Article.ArticleStatus.APPROVED)
+                .build();
+
+        when(repository.findFirstByPublicIdAndVersion("test-id", 1)).thenReturn(Optional.of(article));
+        when(repository.save(any(Article.class))).thenReturn(article);
+
+        Article updatedArticle = articleService.updateArticle("test-id", articleRequestDto, 1, true);
+
+        assertThat(updatedArticle).isNotNull();
+        assertThat(updatedArticle.getTitle()).isEqualTo("Updated Title");
+        assertThat(updatedArticle.getDescription()).isEqualTo("Updated Description");
+        assertThat(updatedArticle.getContent()).isEqualTo("Updated Content");
+        assertThat(updatedArticle.getStatus()).isEqualTo(Article.ArticleStatus.APPROVED);
+        assertThat(updatedArticle.getEditedBy()).isEqualTo("user");
+        assertThat(updatedArticle.getVersion()).isEqualTo(1);
+        assertThat(updatedArticle.getIsEditable()).isEqualTo(true);
+
+        verify(repository).save(articleCaptor.capture());
+        Article savedArticle = articleCaptor.getValue();
+        assertThat(savedArticle.getTitle()).isEqualTo("Updated Title");
+        assertThat(savedArticle.getDescription()).isEqualTo("Updated Description");
+        assertThat(savedArticle.getContent()).isEqualTo("Updated Content");
+        assertThat(savedArticle.getStatus()).isEqualTo(Article.ArticleStatus.APPROVED);
+        assertThat(savedArticle.getEditedBy()).isEqualTo("user");
+        assertThat(savedArticle.getVersion()).isEqualTo(1);
+    }
+
+    @Test
+    public void testUpdateArticle_NotFound() {
+        ArticleRequestDto articleRequestDto = ArticleRequestDto.builder()
+                .title("Updated Title")
+                .description("Updated Description")
+                .content("Updated Content")
+                .editedBy("user")
+                .status(Article.ArticleStatus.APPROVED)
+                .build();
+
+        when(repository.findFirstByPublicIdAndVersion("non-existent-id", 1)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> articleService.updateArticle("non-existent-id", articleRequestDto, 1, true))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Article not found with PublicId: non-existent-id");
+    }
+
+    @Test
+    public void testGetArticleByPublicIdAndVersion_Success() {
+        String publicId = "test-id";
+        Integer version = 1;
+
+        // Erstellen eines Testartikels
+        Article article = new Article();
+        article.setPublicId(publicId);
+        article.setVersion(version);
+        article.setTitle("Test Title");
+        article.setDescription("Test Description");
+        article.setContent("Test Content");
+        article.setStatus(Article.ArticleStatus.EDITING);
+
+        // Mocking des repository Verhaltens
+        when(repository.findFirstByPublicIdAndVersion(publicId, version)).thenReturn(Optional.of(article));
+
+        // Aufruf der Methode
+        Article result = articleService.getArticleByPublicIdAndVersion(publicId, version);
+
+        // Überprüfen der Rückgabewerte
+        assertThat(result).isNotNull();
+        assertThat(result.getPublicId()).isEqualTo(publicId);
+        assertThat(result.getVersion()).isEqualTo(version);
+        assertThat(result.getTitle()).isEqualTo("Test Title");
+        assertThat(result.getDescription()).isEqualTo("Test Description");
+        assertThat(result.getContent()).isEqualTo("Test Content");
+        assertThat(result.getStatus()).isEqualTo(Article.ArticleStatus.EDITING);
+
+        verify(repository, times(1)).findFirstByPublicIdAndVersion(publicId, version);
+    }
+
+
+    @Test
+    public void testGetArticleByPublicIdAndVersion_NotFound() {
+        String publicId = "non-existent-id";
+        Integer version = 1;
+
+        when(repository.findFirstByPublicIdAndVersion(publicId, version)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> articleService.getArticleByPublicIdAndVersion(publicId, version))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Article not found with publicId: " + publicId);
     }
 }

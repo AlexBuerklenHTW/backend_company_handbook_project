@@ -28,4 +28,6 @@ public class ArticleRequestDto {
 	private Article.ArticleStatus status;
 
 	private String editedBy;
+
+	private Boolean isEditable;
 }

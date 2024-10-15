@@ -23,6 +23,7 @@ public class ArticleMapper {
                 .version(article.getVersion())
                 .status(article.getStatus())
                 .editedBy(article.getEditedBy())
+                .isEditable(article.getIsEditable())
                 .build();
     }
 

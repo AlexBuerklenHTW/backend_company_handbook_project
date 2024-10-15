@@ -48,6 +48,8 @@ public class Article {
     @Column()
     private String editedBy;
 
+    @Column
+    private Boolean isEditable;
 
 
     @PrePersist

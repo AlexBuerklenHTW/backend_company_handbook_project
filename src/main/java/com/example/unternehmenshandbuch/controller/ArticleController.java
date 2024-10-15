@@ -48,8 +48,8 @@ public class ArticleController implements ArticleResource {
     }
 
     @Override
-    public ResponseEntity<ArticleResponseDto> updateArticle(String id, ArticleRequestDto articleRequestDto, Integer version) {
-        Article updatedArticle = articleService.updateArticle(id, articleRequestDto, version);
+    public ResponseEntity<ArticleResponseDto> updateArticle(String id, ArticleRequestDto articleRequestDto, Integer version, Boolean isEditable) {
+        Article updatedArticle = articleService.updateArticle(id, articleRequestDto, version, isEditable);
         return ResponseEntity.ok(articleMapper.mapToDto(updatedArticle));
     }
 
@@ -87,6 +87,12 @@ public class ArticleController implements ArticleResource {
     public ResponseEntity<ArticleResponseDto> getArticleByPublicIdAndVersionAndStatus(String publicId, Integer version, String status) {
         Article.ArticleStatus statusInEnum = Article.ArticleStatus.valueOf(status.toUpperCase());
         Article article = articleService.getArticleByPublicIdAndVersionAndStatus(publicId, version, statusInEnum);
+        return ResponseEntity.ok(articleMapper.mapToDto(article));
+    }
+
+    @Override
+    public ResponseEntity<ArticleResponseDto> getArticleByPublicIdAndVersion(String publicId, Integer version) {
+        Article article = articleService.getArticleByPublicIdAndVersion(publicId, version);
         return ResponseEntity.ok(articleMapper.mapToDto(article));
     }
 }

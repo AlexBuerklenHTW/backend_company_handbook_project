@@ -101,50 +101,6 @@ public class ArticleControllerTest {
                 .andExpect(jsonPath("$.editedBy").value("testUser"));
     }
 
-    @Test
-    @WithMockUser
-    public void testUpdateArticle_Success() throws Exception {
-        Article updatedArticle = Article.builder()
-                .publicId("test-id")
-                .title("Updated Title")
-                .description("Updated Description")
-                .content("Updated Content")
-                .version(2)
-                .status(Article.ArticleStatus.EDITING)
-                .editedBy("testUser")
-                .build();
-
-        ArticleResponseDto updatedArticleResponseDto = ArticleResponseDto.builder()
-                .publicId("test-id")
-                .title("Updated Title")
-                .description("Updated Description")
-                .content("Updated Content")
-                .version(2)
-                .status(Article.ArticleStatus.EDITING)
-                .editedBy("testUser")
-                .build();
-
-        when(articleService.updateArticle(eq("test-id"), any(ArticleRequestDto.class), eq(1))).thenReturn(updatedArticle);
-        when(articleMapper.mapToDto(any(Article.class))).thenReturn(updatedArticleResponseDto);
-
-        mockMvc.perform(put("/articles/test-id")
-                        .param("version", "1") // Hinzufügen des 'version'-Parameters
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\": \"Updated Title\", \"description\": \"Updated Description\", \"content\": \"Updated Content\", \"editedBy\": \"testUser\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.publicId").value("test-id"))
-                .andExpect(jsonPath("$.title").value("Updated Title"))
-                .andExpect(jsonPath("$.description").value("Updated Description"))
-                .andExpect(jsonPath("$.content").value("Updated Content"))
-                .andExpect(jsonPath("$.version").value(2))
-                .andExpect(jsonPath("$.status").value("EDITING"))
-                .andExpect(jsonPath("$.editedBy").value("testUser"));
-
-        verify(articleService, times(1)).updateArticle(eq("test-id"), any(ArticleRequestDto.class), eq(1));
-        verify(articleMapper, times(1)).mapToDto(updatedArticle);
-    }
-
-
 
     @Test
     @WithMockUser
@@ -239,24 +195,6 @@ public class ArticleControllerTest {
                         .content(invalidArticleJson))
                 .andExpect(status().isBadRequest());
     }
-
-    @Test
-    @WithMockUser
-    public void testUpdateArticle_InvalidId() throws Exception {
-        when(articleService.updateArticle(eq("invalid-id"), any(ArticleRequestDto.class), eq(1)))
-                .thenThrow(new ArticleValidationException("Invalid ID"));
-
-        mockMvc.perform(put("/articles/invalid-id")
-                        .param("version", "1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\": \"Updated Title\", \"description\": \"Updated Description\", \"content\": \"Updated Content\", \"editedBy\": \"testUser\"}"))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string("Invalid ID"));
-
-        verify(articleService, times(1)).updateArticle(eq("invalid-id"), any(ArticleRequestDto.class), eq(1));
-        verify(articleMapper, times(0)).mapToDto(any());
-    }
-
 
     @Test
     @WithMockUser
@@ -602,5 +540,182 @@ public class ArticleControllerTest {
 
         verify(articleService, times(1)).getArticleByPublicIdAndVersionAndStatus(publicId, version, Article.ArticleStatus.APPROVED);
         verify(articleMapper, times(0)).mapToDto(any());
+    }
+
+    @Test
+    @WithMockUser
+    public void testUpdateArticle_Success() throws Exception {
+        String articleId = "test-id";
+        Integer version = 1;
+        Boolean isEditable = true;
+
+
+        Article updatedArticle = Article.builder()
+                .publicId(articleId)
+                .title("Updated Title")
+                .description("Updated Description")
+                .content("Updated Content")
+                .version(version + 1)
+                .status(Article.ArticleStatus.EDITING)
+                .editedBy("testUser")
+                .build();
+
+        ArticleResponseDto updatedArticleDto = ArticleResponseDto.builder()
+                .publicId(articleId)
+                .title("Updated Title")
+                .description("Updated Description")
+                .content("Updated Content")
+                .version(version + 1)
+                .status(Article.ArticleStatus.EDITING)
+                .editedBy("testUser")
+                .build();
+
+        when(articleService.updateArticle(eq(articleId), any(ArticleRequestDto.class), eq(version), eq(isEditable)))
+                .thenReturn(updatedArticle);
+        when(articleMapper.mapToDto(updatedArticle)).thenReturn(updatedArticleDto);
+
+        String updateRequestJson = "{"
+                + "\"title\": \"Updated Title\","
+                + "\"description\": \"Updated Description\","
+                + "\"content\": \"Updated Content\","
+                + "\"editedBy\": \"testUser\""
+                + "}";
+
+        mockMvc.perform(put("/articles/{id}/{isEditable}", articleId, isEditable)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequestJson)
+                        .param("version", version.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.publicId").value(articleId))
+                .andExpect(jsonPath("$.title").value("Updated Title"))
+                .andExpect(jsonPath("$.description").value("Updated Description"))
+                .andExpect(jsonPath("$.content").value("Updated Content"))
+                .andExpect(jsonPath("$.version").value(version + 1))
+                .andExpect(jsonPath("$.status").value("EDITING"))
+                .andExpect(jsonPath("$.editedBy").value("testUser"));
+    }
+
+    @Test
+    @WithMockUser
+    public void testUpdateArticle_NotFound() throws Exception {
+        String articleId = "non-existent-id";
+        Integer version = 1;
+        Boolean isEditable = true;
+
+
+        when(articleService.updateArticle(eq(articleId), any(ArticleRequestDto.class), eq(version), eq(isEditable)))
+                .thenThrow(new ResourceNotFoundException("Article not found"));
+
+        String updateRequestJson = "{"
+                + "\"title\": \"Updated Title\","
+                + "\"description\": \"Updated Description\","
+                + "\"content\": \"Updated Content\","
+                + "\"editedBy\": \"testUser\""
+                + "}";
+
+        mockMvc.perform(put("/articles/{id}/{isEditable}", articleId, isEditable)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequestJson)
+                        .param("version", version.toString()))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Article not found"));
+    }
+
+    @Test
+    @WithMockUser
+    public void testUpdateArticle_VersionConflict() throws Exception {
+        String articleId = "test-id";
+        Integer version = 1;
+        Boolean isEditable = true;
+
+
+        when(articleService.updateArticle(eq(articleId), any(ArticleRequestDto.class), eq(version), eq(isEditable)))
+                .thenThrow(new ArticleValidationException("Version conflict"));
+
+        String updateRequestJson = "{"
+                + "\"title\": \"Updated Title\","
+                + "\"description\": \"Updated Description\","
+                + "\"content\": \"Updated Content\","
+                + "\"editedBy\": \"testUser\""
+                + "}";
+
+        mockMvc.perform(put("/articles/{id}/{isEditable}", articleId, isEditable)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequestJson)
+                        .param("version", version.toString()))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Version conflict"));
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetArticleByPublicIdAndVersion_Success() throws Exception {
+        String publicId = "test-id";
+        Integer version = 1;
+
+        Article article = Article.builder()
+                .publicId(publicId)
+                .title("Test Title")
+                .description("Test Description")
+                .content("Test Content")
+                .version(version)
+                .status(Article.ArticleStatus.EDITING)
+                .editedBy("testUser")
+                .build();
+
+        ArticleResponseDto articleDto = ArticleResponseDto.builder()
+                .publicId(publicId)
+                .title("Test Title")
+                .description("Test Description")
+                .content("Test Content")
+                .version(version)
+                .status(Article.ArticleStatus.EDITING)
+                .editedBy("testUser")
+                .build();
+
+        when(articleService.getArticleByPublicIdAndVersion(publicId, version)).thenReturn(article);
+        when(articleMapper.mapToDto(article)).thenReturn(articleDto);
+
+        mockMvc.perform(get("/articles/{publicId}/{version}", publicId, version)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.publicId").value(publicId))
+                .andExpect(jsonPath("$.title").value("Test Title"))
+                .andExpect(jsonPath("$.description").value("Test Description"))
+                .andExpect(jsonPath("$.content").value("Test Content"))
+                .andExpect(jsonPath("$.version").value(version))
+                .andExpect(jsonPath("$.status").value("EDITING"))
+                .andExpect(jsonPath("$.editedBy").value("testUser"));
+    }
+
+
+    @Test
+    @WithMockUser
+    public void testGetArticleByPublicIdAndVersion_NotFound() throws Exception {
+        String publicId = "non-existent-id";
+        Integer version = 1;
+
+        when(articleService.getArticleByPublicIdAndVersion(publicId, version))
+                .thenThrow(new ResourceNotFoundException("Article not found"));
+
+        mockMvc.perform(get("/articles/{publicId}/{version}", publicId, version)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Article not found"));
+    }
+
+    @Test
+    @WithMockUser
+    public void testGetArticleByPublicIdAndVersion_InvalidParameters() throws Exception {
+        String publicId = "test-id";
+        Integer version = -1;
+
+        when(articleService.getArticleByPublicIdAndVersion(publicId, version))
+                .thenThrow(new IllegalArgumentException("Version must be positive"));
+
+        mockMvc.perform(get("/articles/{publicId}/{version}", publicId, version)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Version must be positive"));
     }
 }

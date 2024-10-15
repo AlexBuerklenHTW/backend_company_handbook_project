@@ -13,8 +13,8 @@ public interface ArticleService {
     @Transactional
     Article createArticle(ArticleRequestDto articleDto);
 
-    @Transactional(readOnly = true)
-    Article getArticleById(String publicId);
+    @Transactional
+    Article getArticleByPublicIdAndVersion(String publicId, Integer version);
 
     @Transactional(readOnly = true)
     List<Article> getArticlesByStatus();
@@ -23,7 +23,7 @@ public interface ArticleService {
     List<Article> getApprovedArticles();
 
     @Transactional
-    Article updateArticle(String id, ArticleRequestDto articleDto, Integer version);
+    Article updateArticle(String id, ArticleRequestDto articleDto, Integer version, Boolean isEditable);
 
     @Transactional
     Article setApprovalStatus(String id, String status, Integer version, String username);
