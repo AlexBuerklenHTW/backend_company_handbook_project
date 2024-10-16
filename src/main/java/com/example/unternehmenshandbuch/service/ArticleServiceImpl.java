@@ -27,6 +27,8 @@ public class ArticleServiceImpl implements ArticleService {
 				.content(articleDto.getContent())
 				.status(Article.ArticleStatus.EDITING)
 				.editedBy(articleDto.getEditedBy())
+				.isEditable(false)
+				.version(0)
 				.build();
 
 		return repository.save(article);
