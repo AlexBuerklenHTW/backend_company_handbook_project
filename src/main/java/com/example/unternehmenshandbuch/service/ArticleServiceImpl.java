@@ -82,15 +82,15 @@ public class ArticleServiceImpl implements ArticleService {
 		return repository.save(article);
 	}
 
-	@Override
-	public List<Article> getArticlesByRoleAndStatus(String publicId, String role) {
-		ArticleValidationException.validateId(publicId);
-		if (role.equals("ROLE_USER")) {
-			return repository.findByPublicIdAndVersionNotNull(publicId);
-		} else {
-			return repository.findByPublicIdAndStatus(publicId, Article.ArticleStatus.SUBMITTED);
-		}
-	}
+//	@Override
+//	public List<Article> getArticlesByRoleAndStatus(String publicId, String role) {
+//		ArticleValidationException.validateId(publicId);
+//		if (role.equals("ROLE_USER")) {
+//			return repository.findByPublicIdAndVersionNotNull(publicId);
+//		} else {
+//			return repository.findByPublicIdAndStatus(publicId, Article.ArticleStatus.SUBMITTED);
+//		}
+//	}
 
 	@Override
 	public List<Article> getArticlesByUserAndStatus(String username, Article.ArticleStatus status) {
@@ -99,23 +99,33 @@ public class ArticleServiceImpl implements ArticleService {
 
 	@Override
 	public Article getLatestArticleByPublicId(String publicId) {
+		ArticleValidationException.validateId(publicId);
 		return repository.findFirstByPublicId(publicId)
 				.orElseThrow(() -> new ResourceNotFoundException("No article found with publicId: " + publicId));
 	}
 
 	@Override
 	public Article getApprovedArticleByPublicIdAndLastVersion(String publicId) {
+		ArticleValidationException.validateId(publicId);
 		return repository.findLatestApprovedArticleByPublicId(publicId)
 				.orElseThrow(() -> new ResourceNotFoundException("No approved article found with publicId: " + publicId));
 	}
 
 	@Override
+	public Article getSubmittedArticleByPublicIdAndStatus(String publicId, Article.ArticleStatus status) {
+		ArticleValidationException.validateId(publicId);
+		return repository.findByPublicIdAndStatus(publicId, status);
+	}
+
+	@Override
 	public List<Article> getAllApprovedArticlesByPublicId(String publicId) {
+		ArticleValidationException.validateId(publicId);
 		return repository.findAllApprovedArticlesByPublicId(publicId);
 	}
 
 	@Override
 	public Article getArticleByPublicIdAndVersionAndStatus(String publicId, Integer version, Article.ArticleStatus status) {
+		ArticleValidationException.validateId(publicId);
 		return repository.findArticleByPublicIdAndVersionAndStatus(publicId, version, status)
 				.orElseThrow(() -> new ResourceNotFoundException("No article found with publicId: " + publicId));
 	}

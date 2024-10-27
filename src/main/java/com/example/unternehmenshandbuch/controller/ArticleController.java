@@ -59,11 +59,11 @@ public class ArticleController implements ArticleResource {
         return ResponseEntity.ok(articleMapper.mapToDto(updatedArticle));
     }
 
-    @Override
-    public ResponseEntity<List<ArticleResponseDto>> getArticlesByStatusAndRole(String publicId, String role) {
-        List<Article> articles = articleService.getArticlesByRoleAndStatus(publicId, role);
-        return ResponseEntity.ok(articleMapper.mapToDtoList(articles));
-    }
+//    @Override
+//    public ResponseEntity<List<ArticleResponseDto>> getArticlesByStatusAndRole(String publicId, String role) {
+//        List<Article> articles = articleService.getArticlesByRoleAndStatus(publicId, role);
+//        return ResponseEntity.ok(articleMapper.mapToDtoList(articles));
+//    }
 
     @Override
     public ResponseEntity<List<ArticleResponseDto>> getArticlesEditedByUser(String username) {
@@ -74,6 +74,13 @@ public class ArticleController implements ArticleResource {
     @Override
     public ResponseEntity<ArticleResponseDto> getApprovedArticleByPublicIdAndLastVersion(String publicId) {
         Article article = articleService.getApprovedArticleByPublicIdAndLastVersion(publicId);
+        return ResponseEntity.ok(articleMapper.mapToDto(article));
+    }
+
+    @Override
+    public ResponseEntity<ArticleResponseDto> getSubmittedArticleByPublicIdAndStatus(String publicId, String status) {
+        Article.ArticleStatus statusInEnum = Article.ArticleStatus.valueOf(status.toUpperCase());
+        Article article = articleService.getSubmittedArticleByPublicIdAndStatus(publicId, statusInEnum);
         return ResponseEntity.ok(articleMapper.mapToDto(article));
     }
 

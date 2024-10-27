@@ -55,14 +55,14 @@ public interface ArticleResource {
     @PutMapping("/articles/{id}/approval")
     ResponseEntity<ArticleResponseDto> setApprovalStatus(@PathVariable String id, @RequestBody ApprovalRequestDto approvalRequestDto);
 
-    @Operation(summary = "Get all versions of an article by public ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "List of article versions", content = @Content(schema = @Schema(implementation = ArticleResponseDto.class))),
-            @ApiResponse(responseCode = "404", description = "Article not found", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @GetMapping("/articles/{publicId}/versions")
-    ResponseEntity<List<ArticleResponseDto>> getArticlesByStatusAndRole(@PathVariable String publicId, @RequestParam String role);
+//    @Operation(summary = "Get all versions of an article by public ID")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "List of article versions", content = @Content(schema = @Schema(implementation = ArticleResponseDto.class))),
+//            @ApiResponse(responseCode = "404", description = "Article not found", content = @Content),
+//            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+//    })
+//    @GetMapping("/articles/{publicId}/versions")
+//    ResponseEntity<List<ArticleResponseDto>> getArticlesByStatusAndRole(@PathVariable String publicId, @RequestParam String role);
 
     @Operation(summary = "Get all approved articles")
     @ApiResponses(value = {
@@ -92,6 +92,9 @@ public interface ArticleResource {
 
     @GetMapping("/articles/{publicId}/approvedArticleByPublicIdAndLastVersion")
     ResponseEntity<ArticleResponseDto> getApprovedArticleByPublicIdAndLastVersion(@PathVariable String publicId);
+
+    @GetMapping("/articles/{publicId}/{status}/submittedArticleByPublicId")
+    ResponseEntity<ArticleResponseDto> getSubmittedArticleByPublicIdAndStatus(@PathVariable String publicId, @PathVariable String status);
 
     @GetMapping("/articles/{publicId}/approvedArticlesByPublicId")
     ResponseEntity<List<ArticleResponseDto>> getAllApprovedArticlesByPublicId(@PathVariable String publicId);
