@@ -1,7 +1,6 @@
 package com.example.unternehmenshandbuch.controller;
 
 import com.example.unternehmenshandbuch.controller.dto.ArticleResponseDto;
-import com.example.unternehmenshandbuch.service.dto.ApprovalRequestDto;
 import com.example.unternehmenshandbuch.service.dto.ArticleRequestDto;
 import com.example.unternehmenshandbuch.mapper.ArticleMapper;
 import com.example.unternehmenshandbuch.model.Article;
@@ -54,8 +53,8 @@ public class ArticleController implements ArticleResource {
     }
 
     @Override
-    public ResponseEntity<ArticleResponseDto> setApprovalStatus(String id, ApprovalRequestDto approvalRequest) {
-        Article updatedArticle = articleService.setApprovalStatus(id, approvalRequest.getStatus(), approvalRequest.getVersion(), approvalRequest.getEditedBy());
+    public ResponseEntity<ArticleResponseDto> setApprovalStatus(String publicId, ArticleRequestDto articleRequestDto) {
+        Article updatedArticle = articleService.setApprovalStatus(publicId, articleRequestDto);
         return ResponseEntity.ok(articleMapper.mapToDto(updatedArticle));
     }
 
@@ -85,8 +84,8 @@ public class ArticleController implements ArticleResource {
     }
 
     @Override
-    public ResponseEntity<List<ArticleResponseDto>> getAllApprovedArticlesByPublicId(String publicId) {
-        List<Article> articles = articleService.getAllApprovedArticlesByPublicId(publicId);
+    public ResponseEntity<List<ArticleResponseDto>> getAllApprovedAndDeclinedArticlesByPublicId(String publicId) {
+        List<Article> articles = articleService.getAllApprovedAndDeclinedArticlesByPublicId(publicId);
         return ResponseEntity.ok(articleMapper.mapToDtoList(articles));
     }
 

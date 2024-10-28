@@ -26,7 +26,7 @@ public interface ArticleService {
     Article updateArticle(String id, ArticleRequestDto articleDto, Integer version, Boolean isEditable);
 
     @Transactional
-    Article setApprovalStatus(String id, String status, Integer version, String username);
+    Article setApprovalStatus(String publicId, ArticleRequestDto articleDto);
 
 //    @Transactional(readOnly = true)
 //    List<Article> getArticlesByRoleAndStatus(String publicId, String role);
@@ -44,7 +44,7 @@ public interface ArticleService {
     Article getSubmittedArticleByPublicIdAndStatus(String publicId,  Article.ArticleStatus status);
 
     @Transactional(readOnly = true)
-    List<Article> getAllApprovedArticlesByPublicId(String publicId);
+    List<Article> getAllApprovedAndDeclinedArticlesByPublicId(String publicId);
 
     @Transactional(readOnly = true)
     Article getArticleByPublicIdAndVersionAndStatus(String publicId, Integer version, Article.ArticleStatus status);

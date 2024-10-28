@@ -69,15 +69,23 @@ public class ArticleServiceImpl implements ArticleService {
 		}
 
 	@Override
-	public Article setApprovalStatus(String publicId, String status, Integer version, String username) {
-		ArticleValidationException.validateId(publicId);
-		ArticleValidationException.validateApprovalStatus(Article.ArticleStatus.valueOf(status));
+	public Article setApprovalStatus(String publicId, ArticleRequestDto articleRequestDto) {
+		ArticleValidationException.validateArticleRequestDto(articleRequestDto);
 
-		Article article = repository.findByPublicIdAndEditedByAndVersionNull(publicId, username)
-				.orElseThrow(() -> new ResourceNotFoundException("Article not found with publicId: " + publicId + " and version: " + version));
+		repository.updateStatusByPublicId(Article.ArticleStatus.SUBMITTED, Article.ArticleStatus.DECLINED, publicId);
 
-		article.setStatus(Article.ArticleStatus.valueOf(status.toUpperCase()));
-		article.setVersion(version);
+		Integer newVersion = articleRequestDto.getVersion() + 1;
+
+		Article article = Article.builder()
+				.publicId(publicId)
+				.title(articleRequestDto.getTitle())
+				.description(articleRequestDto.getDescription())
+				.content(articleRequestDto.getContent())
+				.status(Article.ArticleStatus.APPROVED)
+				.editedBy(articleRequestDto.getEditedBy())
+				.isEditable(true)
+				.version(newVersion)
+				.build();
 
 		return repository.save(article);
 	}
@@ -118,9 +126,9 @@ public class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
-	public List<Article> getAllApprovedArticlesByPublicId(String publicId) {
+	public List<Article> getAllApprovedAndDeclinedArticlesByPublicId(String publicId) {
 		ArticleValidationException.validateId(publicId);
-		return repository.findAllApprovedArticlesByPublicId(publicId);
+		return repository.findAllApprovedAndDeclinedArticlesByPublicId(publicId);
 	}
 
 	@Override

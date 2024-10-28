@@ -1,7 +1,6 @@
 package com.example.unternehmenshandbuch.controller;
 
 import com.example.unternehmenshandbuch.controller.dto.ArticleResponseDto;
-import com.example.unternehmenshandbuch.service.dto.ApprovalRequestDto;
 import com.example.unternehmenshandbuch.service.dto.ArticleRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -45,15 +44,15 @@ public interface ArticleResource {
     @PutMapping("/articles/{id}/{isEditable}")
     ResponseEntity<ArticleResponseDto> updateArticle(@PathVariable String id, @Valid @RequestBody ArticleRequestDto articleRequestDto, @RequestParam Integer version, @PathVariable Boolean isEditable);
 
-    @Operation(summary = "Set approval status of an article")
+    @Operation(summary = "Seapproval status of an article")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Article approval status updated", content = @Content(schema = @Schema(implementation = ArticleResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "Invalid approval status", content = @Content),
             @ApiResponse(responseCode = "404", description = "Article not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @PutMapping("/articles/{id}/approval")
-    ResponseEntity<ArticleResponseDto> setApprovalStatus(@PathVariable String id, @RequestBody ApprovalRequestDto approvalRequestDto);
+    @PostMapping("/articles/approval/{publicId}")
+    ResponseEntity<ArticleResponseDto> setApprovalStatus(@PathVariable String publicId, @RequestBody ArticleRequestDto articleRequestDto);
 
 //    @Operation(summary = "Get all versions of an article by public ID")
 //    @ApiResponses(value = {
@@ -96,8 +95,8 @@ public interface ArticleResource {
     @GetMapping("/articles/{publicId}/{status}/submittedArticleByPublicId")
     ResponseEntity<ArticleResponseDto> getSubmittedArticleByPublicIdAndStatus(@PathVariable String publicId, @PathVariable String status);
 
-    @GetMapping("/articles/{publicId}/approvedArticlesByPublicId")
-    ResponseEntity<List<ArticleResponseDto>> getAllApprovedArticlesByPublicId(@PathVariable String publicId);
+    @GetMapping("/articles/{publicId}/approvedAndDeclinedArticlesByPublicId")
+    ResponseEntity<List<ArticleResponseDto>> getAllApprovedAndDeclinedArticlesByPublicId(@PathVariable String publicId);
 
     @GetMapping("/articles/{publicId}/version/{version}/{status}")
     ResponseEntity<ArticleResponseDto> getArticleByPublicIdAndVersionAndStatus(@PathVariable String publicId, @PathVariable Integer version, @PathVariable String status);

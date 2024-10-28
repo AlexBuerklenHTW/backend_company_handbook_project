@@ -19,7 +19,8 @@ public class Article {
     public enum ArticleStatus {
         EDITING,
         SUBMITTED,
-        APPROVED
+        APPROVED,
+        DECLINED
     }
 
     @Id
