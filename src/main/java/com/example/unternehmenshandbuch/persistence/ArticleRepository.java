@@ -35,7 +35,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     @Query("SELECT a FROM Article a WHERE a.publicId = :publicId AND a.status = 'APPROVED' AND a.version = (SELECT MAX(a2.version) FROM Article a2 WHERE a2.publicId = :publicId AND a2.status = 'APPROVED')")
     Optional<Article> findLatestApprovedArticleByPublicId(@Param("publicId") String publicId);
 
-    @Query("SELECT a FROM Article a WHERE a.publicId = :publicId AND a.status IN (com.example.unternehmenshandbuch.model.Article.ArticleStatus.APPROVED, com.example.unternehmenshandbuch.model.Article.ArticleStatus.DECLINED) ORDER BY a.version DESC")
+    @Query("SELECT a FROM Article a WHERE a.publicId = :publicId AND a.status IN (com.example.unternehmenshandbuch.model.Article.ArticleStatus.APPROVED, com.example.unternehmenshandbuch.model.Article.ArticleStatus.DECLINED)")
     List<Article> findAllApprovedAndDeclinedArticlesByPublicId(@Param("publicId") String publicId);
 
     Optional<Article> findArticleByPublicIdAndVersionAndStatus(String publicId, Integer version, Article.ArticleStatus status);
