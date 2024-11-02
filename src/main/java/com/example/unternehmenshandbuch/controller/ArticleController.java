@@ -53,8 +53,8 @@ public class ArticleController implements ArticleResource {
     }
 
     @Override
-    public ResponseEntity<ArticleResponseDto> setApprovalStatus(String publicId, ArticleRequestDto articleRequestDto) {
-        Article updatedArticle = articleService.setApprovalStatus(publicId, articleRequestDto);
+    public ResponseEntity<ArticleResponseDto> approveArticle(String publicId, ArticleRequestDto articleRequestDto) {
+        Article updatedArticle = articleService.approveArticle(publicId, articleRequestDto);
         return ResponseEntity.ok(articleMapper.mapToDto(updatedArticle));
     }
 
@@ -84,8 +84,9 @@ public class ArticleController implements ArticleResource {
     }
 
     @Override
-    public ResponseEntity<List<ArticleResponseDto>> getAllApprovedAndDeclinedArticlesByPublicId(String publicId) {
-        List<Article> articles = articleService.getAllApprovedAndDeclinedArticlesByPublicId(publicId);
+    public ResponseEntity<List<ArticleResponseDto>> getAllApprovedArticlesByPublicId(String publicId) {
+        List<Article> articles = articleService.getAllApprovedArticlesByPublicId(publicId);
+        System.out.println(articles);
         return ResponseEntity.ok(articleMapper.mapToDtoList(articles));
     }
 
@@ -100,5 +101,11 @@ public class ArticleController implements ArticleResource {
     public ResponseEntity<ArticleResponseDto> getArticleByPublicIdAndVersion(String publicId, Integer version) {
         Article article = articleService.getArticleByPublicIdAndVersion(publicId, version);
         return ResponseEntity.ok(articleMapper.mapToDto(article));
+    }
+
+    @Override
+    public ResponseEntity<ArticleResponseDto> setEditingStatus(String publicId, ArticleRequestDto articleRequestDto) {
+        Article createdArticle = articleService.setEditingStatus(publicId, articleRequestDto);
+        return ResponseEntity.ok(articleMapper.mapToDto(createdArticle));
     }
 }

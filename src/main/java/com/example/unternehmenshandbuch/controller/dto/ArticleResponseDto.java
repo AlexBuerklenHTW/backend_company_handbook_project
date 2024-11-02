@@ -21,4 +21,5 @@ public class ArticleResponseDto {
     private String editedBy;
     private List<ArticleResponseDto> versions;
     private Boolean isEditable;
+    private Boolean isSubmitted;
 }

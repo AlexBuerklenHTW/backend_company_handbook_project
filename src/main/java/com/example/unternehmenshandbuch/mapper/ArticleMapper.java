@@ -24,6 +24,7 @@ public class ArticleMapper {
                 .status(article.getStatus())
                 .editedBy(article.getEditedBy())
                 .isEditable(article.getIsEditable())
+                .isSubmitted(article.getIsSubmitted())
                 .build();
     }
 

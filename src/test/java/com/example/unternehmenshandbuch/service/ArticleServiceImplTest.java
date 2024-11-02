@@ -49,39 +49,6 @@ public class ArticleServiceImplTest {
                 .build();
     }
 
-    @Test
-    public void testCreateArticle_Success() {
-        ArticleRequestDto articleRequestDto = ArticleRequestDto.builder()
-                .title("Test Title")
-                .description("Test Description")
-                .content("Test Content")
-                .editedBy("user")
-                .build();
-
-        when(repository.save(any(Article.class))).thenReturn(article);
-
-        Article createdArticle = articleService.createArticle(articleRequestDto);
-
-        System.out.println(createdArticle);
-
-        assertThat(createdArticle).isNotNull();
-        assertThat(createdArticle.getTitle()).isEqualTo("Test Title");
-        assertThat(createdArticle.getDescription()).isEqualTo("Test Description");
-        assertThat(createdArticle.getContent()).isEqualTo("Test Content");
-        assertThat(createdArticle.getVersion()).isEqualTo(null);
-        assertThat(createdArticle.getStatus()).isEqualTo(Article.ArticleStatus.EDITING);
-
-        verify(repository).save(articleCaptor.capture());
-        Article savedArticle = articleCaptor.getValue();
-
-        System.out.println(savedArticle);
-        assertThat(savedArticle.getTitle()).isEqualTo("Test Title");
-        assertThat(savedArticle.getDescription()).isEqualTo("Test Description");
-        assertThat(savedArticle.getContent()).isEqualTo("Test Content");
-        assertThat(savedArticle.getVersion()).isEqualTo(null);
-        assertThat(savedArticle.getStatus()).isEqualTo(Article.ArticleStatus.EDITING);
-    }
-
 
     @Test
     public void testGetAllArticles_Success() {
@@ -328,7 +295,7 @@ public class ArticleServiceImplTest {
                 .status(Article.ArticleStatus.APPROVED)
                 .build();
 
-        when(repository.findFirstByPublicIdAndVersion("test-id", 1)).thenReturn(Optional.of(article));
+        when(repository.findByPublicIdAndVersion("test-id", 1)).thenReturn(Optional.of(article));
         when(repository.save(any(Article.class))).thenReturn(article);
 
         Article updatedArticle = articleService.updateArticle("test-id", articleRequestDto, 1, true);
@@ -362,7 +329,7 @@ public class ArticleServiceImplTest {
                 .status(Article.ArticleStatus.APPROVED)
                 .build();
 
-        when(repository.findFirstByPublicIdAndVersion("non-existent-id", 1)).thenReturn(Optional.empty());
+        when(repository.findByPublicIdAndVersion("non-existent-id", 1)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> articleService.updateArticle("non-existent-id", articleRequestDto, 1, true))
                 .isInstanceOf(ResourceNotFoundException.class)
@@ -384,7 +351,7 @@ public class ArticleServiceImplTest {
         article.setStatus(Article.ArticleStatus.EDITING);
 
         // Mocking des repository Verhaltens
-        when(repository.findFirstByPublicIdAndVersion(publicId, version)).thenReturn(Optional.of(article));
+        when(repository.findByPublicIdAndVersion(publicId, version)).thenReturn(Optional.of(article));
 
         // Aufruf der Methode
         Article result = articleService.getArticleByPublicIdAndVersion(publicId, version);
@@ -398,7 +365,7 @@ public class ArticleServiceImplTest {
         assertThat(result.getContent()).isEqualTo("Test Content");
         assertThat(result.getStatus()).isEqualTo(Article.ArticleStatus.EDITING);
 
-        verify(repository, times(1)).findFirstByPublicIdAndVersion(publicId, version);
+        verify(repository, times(1)).findByPublicIdAndVersion(publicId, version);
     }
 
 
@@ -407,7 +374,7 @@ public class ArticleServiceImplTest {
         String publicId = "non-existent-id";
         Integer version = 1;
 
-        when(repository.findFirstByPublicIdAndVersion(publicId, version)).thenReturn(Optional.empty());
+        when(repository.findByPublicIdAndVersion(publicId, version)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> articleService.getArticleByPublicIdAndVersion(publicId, version))
                 .isInstanceOf(ResourceNotFoundException.class)

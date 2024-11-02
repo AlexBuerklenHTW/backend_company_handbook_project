@@ -22,11 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -68,6 +64,7 @@ public class ArticleControllerTest {
                 .version(1)
                 .status(Article.ArticleStatus.EDITING)
                 .editedBy("testUser")
+                .isEditable(false)
                 .build();
 
         articleResponseDto = ArticleResponseDto.builder()
@@ -78,12 +75,13 @@ public class ArticleControllerTest {
                 .version(1)
                 .status(Article.ArticleStatus.EDITING)
                 .editedBy("testUser")
+                .isEditable(false)
                 .build();
     }
 
     @Test
     @WithMockUser
-    public void testCreateArticle_Success() throws Exception {
+    public void testSetEditingStatus_Success() throws Exception {
         when(articleService.createArticle(any(ArticleRequestDto.class))).thenReturn(article);
         when(articleMapper.mapToDto(any(Article.class))).thenReturn(articleResponseDto);
 
@@ -97,44 +95,9 @@ public class ArticleControllerTest {
                 .andExpect(jsonPath("$.content").value("Test Content"))
                 .andExpect(jsonPath("$.version").value(1))
                 .andExpect(jsonPath("$.status").value("EDITING"))
-                .andExpect(jsonPath("$.editedBy").value("testUser"));
+                .andExpect(jsonPath("$.editedBy").value("testUser"))
+                .andExpect(jsonPath("$.isEditable").value(false));
     }
-
-
-//    @Test
-//    @WithMockUser
-//    public void testSetApprovalStatus_Success() throws Exception {
-//        Article approvedArticle = Article.builder()
-//                .publicId("test-id")
-//                .title("Test Title")
-//                .description("Test Description")
-//                .content("Test Content")
-//                .version(1)
-//                .status(Article.ArticleStatus.APPROVED)
-//                .editedBy("testUser")
-//                .build();
-//
-//        ArticleResponseDto approvedArticleResponseDto = ArticleResponseDto.builder()
-//                .publicId("test-id")
-//                .title("Test Title")
-//                .description("Test Description")
-//                .content("Test Content")
-//                .version(1)
-//                .status(Article.ArticleStatus.APPROVED)
-//                .editedBy("testUser")
-//                .build();
-//
-//        when(articleService.setApprovalStatus(anyString(), anyString(), anyInt(), anyString())).thenReturn(approvedArticle);
-//        when(articleMapper.mapToDto(any(Article.class))).thenReturn(approvedArticleResponseDto);
-//
-//        String approvalRequestJson = "{\"status\": \"APPROVED\", \"version\": 1, \"editedBy\": \"testUser\"}";
-//
-//        mockMvc.perform(put("/articles/test-id/approval")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(approvalRequestJson))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.status").value("APPROVED"));
-//    }
 
     @Test
     @WithMockUser
@@ -186,7 +149,7 @@ public class ArticleControllerTest {
 
     @Test
     @WithMockUser
-    public void testCreateArticle_NullTitle() throws Exception {
+    public void testSetEditingStatus_NullTitle() throws Exception {
         String invalidArticleJson = "{\"title\": null, \"description\": \"Test Description\", \"content\": \"Test Content\", \"editedBy\": \"testUser\"}";
 
         mockMvc.perform(post("/articles")
@@ -194,21 +157,6 @@ public class ArticleControllerTest {
                         .content(invalidArticleJson))
                 .andExpect(status().isBadRequest());
     }
-
-//    @Test
-//    @WithMockUser
-//    public void testSetApprovalStatus_InvalidId() throws Exception {
-//        when(articleService.setApprovalStatus(anyString(), anyString(), anyInt(), anyString()))
-//                .thenThrow(new ArticleValidationException("ID must not be null or empty"));
-//
-//        String approvalRequestJson = "{\"status\": \"APPROVED\", \"version\": 1, \"editedBy\": \"testUser\"}";
-//
-//        mockMvc.perform(put("/articles/invalid-id/approval")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(approvalRequestJson))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(content().string("ID must not be null or empty"));
-//    }
 
     @Test
     @WithMockUser
@@ -236,7 +184,7 @@ public class ArticleControllerTest {
 
     @Test
     @WithMockUser
-    public void testCreateArticle_MissingTitle() throws Exception {
+    public void testSetEditingStatus_MissingTitle() throws Exception {
         String invalidArticleJson = "{\"description\": \"Test Description\", \"content\": \"Test Content\", \"editedBy\": \"testUser\"}";
 
         mockMvc.perform(post("/articles")
@@ -285,46 +233,6 @@ public class ArticleControllerTest {
                 .andExpect(jsonPath("$[0].editedBy").value("testUser"));
     }
 
-//    @Test
-//    @WithMockUser
-//    public void testGetArticlesByStatusAndRole_Success() throws Exception {
-//        Article articleByStatusAndRole = Article.builder()
-//                .publicId("test-id")
-//                .title("Role Based Title")
-//                .description("Role Based Description")
-//                .content("Role Based Content")
-//                .version(1)
-//                .status(Article.ArticleStatus.SUBMITTED)
-//                .editedBy("testUser")
-//                .build();
-//
-//        ArticleResponseDto articleByStatusAndRoleResponseDto = ArticleResponseDto.builder()
-//                .publicId("test-id")
-//                .title("Role Based Title")
-//                .description("Role Based Description")
-//                .content("Role Based Content")
-//                .version(1)
-//                .status(Article.ArticleStatus.SUBMITTED)
-//                .editedBy("testUser")
-//                .build();
-//
-//        when(articleService.getArticlesByRoleAndStatus(anyString(), anyString()))
-//                .thenReturn(Collections.singletonList(articleByStatusAndRole));
-//        when(articleMapper.mapToDtoList(anyList()))
-//                .thenReturn(Collections.singletonList(articleByStatusAndRoleResponseDto));
-//
-//        mockMvc.perform(get("/articles/test-id/versions")
-//                        .param("role", "USER")
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$[0].publicId").value("test-id"))
-//                .andExpect(jsonPath("$[0].title").value("Role Based Title"))
-//                .andExpect(jsonPath("$[0].description").value("Role Based Description"))
-//                .andExpect(jsonPath("$[0].content").value("Role Based Content"))
-//                .andExpect(jsonPath("$[0].version").value(1))
-//                .andExpect(jsonPath("$[0].status").value("SUBMITTED"))
-//                .andExpect(jsonPath("$[0].editedBy").value("testUser"));
-//    }
 
     @Test
     @WithMockUser
@@ -364,74 +272,6 @@ public class ArticleControllerTest {
                 .andExpect(jsonPath("$[0].editedBy").value("testUser"));
     }
 
-    @Test
-    @WithMockUser
-    public void testGetAllApprovedAndDeclinedArticlesByPublicId_Success() throws Exception {
-        Article approvedArticle1 = Article.builder()
-                .publicId("test-id")
-                .title("Approved Article Title 1")
-                .description("Approved Article Description 1")
-                .content("Approved Article Content 1")
-                .version(1)
-                .status(Article.ArticleStatus.APPROVED)
-                .editedBy("testUser1")
-                .build();
-
-        Article approvedArticle2 = Article.builder()
-                .publicId("test-id")
-                .title("Approved Article Title 2")
-                .description("Approved Article Description 2")
-                .content("Approved Article Content 2")
-                .version(2)
-                .status(Article.ArticleStatus.APPROVED)
-                .editedBy("testUser2")
-                .build();
-
-        List<Article> approvedArticles = Arrays.asList(approvedArticle1, approvedArticle2);
-
-        ArticleResponseDto approvedArticleResponseDto1 = ArticleResponseDto.builder()
-                .publicId("test-id")
-                .title("Approved Article Title 1")
-                .description("Approved Article Description 1")
-                .content("Approved Article Content 1")
-                .version(1)
-                .status(Article.ArticleStatus.APPROVED)
-                .editedBy("testUser1")
-                .build();
-
-        ArticleResponseDto approvedArticleResponseDto2 = ArticleResponseDto.builder()
-                .publicId("test-id")
-                .title("Approved Article Title 2")
-                .description("Approved Article Description 2")
-                .content("Approved Article Content 2")
-                .version(2)
-                .status(Article.ArticleStatus.APPROVED)
-                .editedBy("testUser2")
-                .build();
-
-        List<ArticleResponseDto> approvedArticleResponseDtos = Arrays.asList(approvedArticleResponseDto1, approvedArticleResponseDto2);
-
-        when(articleService.getAllApprovedAndDeclinedArticlesByPublicId(anyString())).thenReturn(approvedArticles);
-        when(articleMapper.mapToDtoList(anyList())).thenReturn(approvedArticleResponseDtos);
-
-        mockMvc.perform(get("/articles/test-id/approvedArticlesByPublicId")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].publicId").value("test-id"))
-                .andExpect(jsonPath("$[0].title").value("Approved Article Title 1"))
-                .andExpect(jsonPath("$[0].description").value("Approved Article Description 1"))
-                .andExpect(jsonPath("$[0].content").value("Approved Article Content 1"))
-                .andExpect(jsonPath("$[0].version").value(1))
-                .andExpect(jsonPath("$[0].status").value("APPROVED"))
-                .andExpect(jsonPath("$[0].editedBy").value("testUser1"))
-                .andExpect(jsonPath("$[1].publicId").value("test-id"))
-                .andExpect(jsonPath("$[1].title").value("Approved Article Title 2"))
-                .andExpect(jsonPath("$[1].description").value("Approved Article Description 2"))
-                .andExpect(jsonPath("$[1].content").value("Approved Article Content 2"))
-                .andExpect(jsonPath("$[1].version").value(2))
-                .andExpect(jsonPath("$[1].status").value("APPROVED"))
-                .andExpect(jsonPath("$[1].editedBy").value("testUser2"));
-    }
 
     @Test
     @WithMockUser
