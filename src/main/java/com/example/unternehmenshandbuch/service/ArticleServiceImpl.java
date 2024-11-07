@@ -9,6 +9,7 @@ import com.example.unternehmenshandbuch.service.dto.ArticleRequestDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ArticleServiceImpl implements ArticleService {
@@ -22,7 +23,6 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public Article createArticle(ArticleRequestDto articleDto) {
-
 
         String publicId = Helper.generateOrRetrievePublicId(articleDto.getPublicId());
 
@@ -65,8 +65,6 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public Article updateArticle(String publicId, ArticleRequestDto articleDto, Integer version, Boolean isEditable) {
 
-        System.out.println("updateArticle wird aufgerufen");
-        System.out.println("status: " + articleDto.getStatus());
         ArticleValidationException.validateId(publicId);
         ArticleValidationException.validateArticleRequestDto(articleDto);
 
@@ -84,6 +82,24 @@ public class ArticleServiceImpl implements ArticleService {
                     .isSubmitted(false)
                     .build();
             return repository.save(article);
+
+        } else if (articleDto.getStatus() == Article.ArticleStatus.EDITING && Objects.equals(articleDto.getVersion(), version)) {
+
+            Article existingArticle = repository.findByPublicIdAndVersion(publicId, version)
+                    .orElseThrow(() -> new ResourceNotFoundException("Article not found with PublicId: " + publicId));
+
+            System.out.println(repository.findByPublicIdAndVersion(publicId, version));
+
+            existingArticle.setTitle(articleDto.getTitle());
+            existingArticle.setDescription(articleDto.getDescription());
+            existingArticle.setContent(articleDto.getContent());
+            existingArticle.setStatus(Article.ArticleStatus.EDITING);
+            existingArticle.setEditedBy(articleDto.getEditedBy());
+            existingArticle.setVersion(version);
+            existingArticle.setIsEditable(isEditable);
+            existingArticle.setIsSubmitted(false);
+
+            return repository.save(existingArticle);
         } else {
 
             Article existingArticle = repository.findByPublicIdAndVersion(publicId, version)
@@ -189,9 +205,9 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public List<Article> getAllApprovedArticlesByPublicId(String publicId) {
+    public List<Article> getAllApprovedArticlesByPublicId(String publicId, Article.ArticleStatus status) {
         ArticleValidationException.validateId(publicId);
-        return repository.findAllApprovedArticlesByPublicId(publicId);
+        return repository.findAllApprovedArticlesByPublicId(publicId, status);
     }
 
     @Override

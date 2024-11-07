@@ -88,8 +88,8 @@ public interface ArticleResource {
     @GetMapping("/articles/{publicId}/{status}/submittedArticleByPublicId")
     ResponseEntity<ArticleResponseDto> getSubmittedArticleByPublicIdAndStatus(@PathVariable String publicId, @PathVariable String status);
 
-    @GetMapping("/articles/{publicId}/approvedArticlesByPublicId")
-    ResponseEntity<List<ArticleResponseDto>> getAllApprovedArticlesByPublicId(@PathVariable String publicId);
+    @GetMapping("/articles/{publicId}/approvedArticlesByPublicId/{status}")
+    ResponseEntity<List<ArticleResponseDto>> getAllApprovedArticlesByPublicId(@PathVariable String publicId, @PathVariable String status);
 
     @GetMapping("/articles/{publicId}/version/{version}/{status}")
     ResponseEntity<ArticleResponseDto> getArticleByPublicIdAndVersionAndStatus(@PathVariable String publicId, @PathVariable Integer version, @PathVariable String status);

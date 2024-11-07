@@ -47,7 +47,7 @@ public interface ArticleService {
     Article getSubmittedArticleByPublicIdAndStatus(String publicId,  Article.ArticleStatus status);
 
     @Transactional(readOnly = true)
-    List<Article> getAllApprovedArticlesByPublicId(String publicId);
+    List<Article> getAllApprovedArticlesByPublicId(String publicId, Article.ArticleStatus status);
 
     @Transactional(readOnly = true)
     Article getArticleByPublicIdAndVersionAndStatus(String publicId, Integer version, Article.ArticleStatus status);

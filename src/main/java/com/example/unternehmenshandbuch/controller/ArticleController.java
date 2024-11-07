@@ -84,9 +84,9 @@ public class ArticleController implements ArticleResource {
     }
 
     @Override
-    public ResponseEntity<List<ArticleResponseDto>> getAllApprovedArticlesByPublicId(String publicId) {
-        List<Article> articles = articleService.getAllApprovedArticlesByPublicId(publicId);
-        System.out.println(articles);
+    public ResponseEntity<List<ArticleResponseDto>> getAllApprovedArticlesByPublicId(String publicId, String status) {
+        Article.ArticleStatus statusInEnum = Article.ArticleStatus.valueOf(status.toUpperCase());
+        List<Article> articles = articleService.getAllApprovedArticlesByPublicId(publicId, statusInEnum);
         return ResponseEntity.ok(articleMapper.mapToDtoList(articles));
     }
 
