@@ -104,8 +104,15 @@ public class ArticleController implements ArticleResource {
     }
 
     @Override
-    public ResponseEntity<ArticleResponseDto> setEditingStatus(String publicId, ArticleRequestDto articleRequestDto) {
-        Article createdArticle = articleService.setEditingStatus(publicId, articleRequestDto);
+    public ResponseEntity<ArticleResponseDto> setSubmitStatus(ArticleRequestDto articleRequestDto) {
+        Article createdArticle = articleService.setSubmitStatus(articleRequestDto);
         return ResponseEntity.ok(articleMapper.mapToDto(createdArticle));
+    }
+
+    @Override
+    public ResponseEntity<ArticleResponseDto> declineArticle(String publicId, String status) {
+        Article.ArticleStatus statusInEnum = Article.ArticleStatus.valueOf(status.toUpperCase());
+        Article article = articleService.declineArticleByPublicIdAndStatus(publicId, statusInEnum);
+        return ResponseEntity.ok(articleMapper.mapToDto(article));
     }
 }

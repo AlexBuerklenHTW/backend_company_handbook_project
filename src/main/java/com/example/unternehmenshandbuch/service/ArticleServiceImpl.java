@@ -9,13 +9,11 @@ import com.example.unternehmenshandbuch.service.dto.ArticleRequestDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class ArticleServiceImpl implements ArticleService {
 
     private final ArticleRepository repository;
-
 
     public ArticleServiceImpl(ArticleRepository repository) {
         this.repository = repository;
@@ -54,12 +52,12 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<Article> getArticlesByStatus() {
-        return repository.findByStatus(Article.ArticleStatus.SUBMITTED);
+        return repository.findAllByStatus(Article.ArticleStatus.SUBMITTED);
     }
 
     @Override
     public List<Article> getApprovedArticles() {
-        return repository.findByStatus(Article.ArticleStatus.APPROVED);
+        return repository.findAllByStatus(Article.ArticleStatus.APPROVED);
     }
 
     @Override
@@ -70,6 +68,7 @@ public class ArticleServiceImpl implements ArticleService {
 
         if (articleDto.getStatus() == Article.ArticleStatus.APPROVED) {
             Article article = Article.builder()
+                    .id(null)
                     .publicId(publicId)
                     .title(articleDto.getTitle())
                     .description(articleDto.getDescription())
@@ -81,15 +80,16 @@ public class ArticleServiceImpl implements ArticleService {
                     .editedBy(articleDto.getEditedBy())
                     .isSubmitted(false)
                     .build();
+
+            Article articleWithStatusApproved = repository.findByPublicIdAndStatusAndIsEditableTrue(publicId, Article.ArticleStatus.APPROVED);
+            System.out.println(articleWithStatusApproved);
+            articleWithStatusApproved.setIsEditable(false);
+
             return repository.save(article);
 
-        } else if (articleDto.getStatus() == Article.ArticleStatus.EDITING && Objects.equals(articleDto.getVersion(), version)) {
+        } else if (articleDto.getStatus() == Article.ArticleStatus.EDITING) {
 
-            Article existingArticle = repository.findByPublicIdAndVersion(publicId, version)
-                    .orElseThrow(() -> new ResourceNotFoundException("Article not found with PublicId: " + publicId));
-
-            System.out.println(repository.findByPublicIdAndVersion(publicId, version));
-
+            Article existingArticle = repository.findByStatus(articleDto.getStatus());
             existingArticle.setTitle(articleDto.getTitle());
             existingArticle.setDescription(articleDto.getDescription());
             existingArticle.setContent(articleDto.getContent());
@@ -122,62 +122,43 @@ public class ArticleServiceImpl implements ArticleService {
     public Article approveArticle(String publicId, ArticleRequestDto articleRequestDto) {
         ArticleValidationException.validateArticleRequestDto(articleRequestDto);
 
-        repository.updateStatusByPublicId(Article.ArticleStatus.SUBMITTED, Article.ArticleStatus.DECLINED, publicId);
-        repository.updateStatusByPublicId(Article.ArticleStatus.EDITING, Article.ArticleStatus.DECLINED, publicId);
-
+        Article existingArticle = repository.findByPublicIdAndStatus(publicId, Article.ArticleStatus.SUBMITTED);
+//        Article existingArticle = repository.findByPublicIdAndVersion(publicId, articleRequestDto.getVersion())
+//                .orElseThrow(() -> new ResourceNotFoundException("Article not found with PublicId: " + publicId));
 
         Integer newVersion = articleRequestDto.getVersion() + 1;
 
-        Article article = Article.builder()
-                .publicId(publicId)
-                .title(articleRequestDto.getTitle())
-                .description(articleRequestDto.getDescription())
-                .content(articleRequestDto.getContent())
-                .status(Article.ArticleStatus.APPROVED)
-                .editedBy(articleRequestDto.getEditedBy())
-                .isEditable(true)
-                .isSubmitted(false)
-                .version(newVersion)
-                .build();
+        existingArticle.setVersion(newVersion);
+        existingArticle.setStatus(Article.ArticleStatus.APPROVED);
+        existingArticle.setTitle(articleRequestDto.getTitle());
+        existingArticle.setDescription(articleRequestDto.getDescription());
+        existingArticle.setContent(articleRequestDto.getContent());
+        existingArticle.setEditedBy(articleRequestDto.getEditedBy());
+        existingArticle.setIsEditable(true);
+        existingArticle.setIsSubmitted(false);
+        repository.save(existingArticle);
 
-        return repository.save(article);
+        return repository.save(existingArticle);
     }
 
     @Override
-    public Article setEditingStatus(String publicId, ArticleRequestDto articleDto) {
+    public Article setSubmitStatus(ArticleRequestDto articleDto) {
 
-        System.out.println("setEditingStatus: " + articleDto.getVersion());
+        Article existingArticle = repository.findByPublicIdAndStatus(articleDto.getPublicId(), Article.ArticleStatus.EDITING);
 
-//		Integer version = (articleDto.getVersion() != null && articleDto.getVersion() != 0) ? articleDto.getVersion() : null;
+        existingArticle.setTitle(articleDto.getTitle());
+        existingArticle.setDescription(articleDto.getDescription());
+        existingArticle.setContent(articleDto.getContent());
+        existingArticle.setStatus(Article.ArticleStatus.SUBMITTED);
+        existingArticle.setEditedBy(articleDto.getEditedBy());
+        existingArticle.setVersion(articleDto.getVersion());
+        existingArticle.setIsEditable(false);
+        existingArticle.setIsSubmitted(true);
 
-        Article article = Article.builder()
-                .publicId(articleDto.getPublicId())
-                .title(articleDto.getTitle())
-                .description(articleDto.getDescription())
-                .content(articleDto.getContent())
-                .status(Article.ArticleStatus.SUBMITTED)
-                .editedBy(articleDto.getEditedBy())
-                .isEditable(false)
-                .isSubmitted(true)
-                .version(articleDto.getVersion())
-                .build();
+        ArticleValidationException.validateArticle(existingArticle);
 
-        System.out.println("setEditingStatus article: " + article);
-
-        ArticleValidationException.validateArticle(article);
-
-        return repository.save(article);
+        return repository.save(existingArticle);
     }
-
-//	@Override
-//	public List<Article> getArticlesByRoleAndStatus(String publicId, String role) {
-//		ArticleValidationException.validateId(publicId);
-//		if (role.equals("ROLE_USER")) {
-//			return repository.findByPublicIdAndVersionNotNull(publicId);
-//		} else {
-//			return repository.findByPublicIdAndStatus(publicId, Article.ArticleStatus.SUBMITTED);
-//		}
-//	}
 
     @Override
     public List<Article> getArticlesByUserAndStatus(String username, Article.ArticleStatus status) {
@@ -215,5 +196,18 @@ public class ArticleServiceImpl implements ArticleService {
         ArticleValidationException.validateId(publicId);
         return repository.findArticleByPublicIdAndVersionAndStatus(publicId, version, status)
                 .orElseThrow(() -> new ResourceNotFoundException("No article found with publicId: " + publicId));
+    }
+
+    @Override
+    public Article declineArticleByPublicIdAndStatus(String publicId, Article.ArticleStatus status) {
+        ArticleValidationException.validateId(publicId);
+        Article articleWithStatusSubmitted = repository.findByPublicIdAndStatus(publicId, status);
+
+        System.out.println("articleWithStatusSubmitted: " + articleWithStatusSubmitted);
+
+        articleWithStatusSubmitted.setStatus(Article.ArticleStatus.EDITING);
+        articleWithStatusSubmitted.setIsSubmitted(false);
+
+        return repository.save(articleWithStatusSubmitted);
     }
 }

@@ -18,7 +18,8 @@ public class Article {
         EDITING,
         SUBMITTED,
         APPROVED,
-        DECLINED
+        DECLINED,
+        OTHER_SUBMITTED
     }
 
     @Id

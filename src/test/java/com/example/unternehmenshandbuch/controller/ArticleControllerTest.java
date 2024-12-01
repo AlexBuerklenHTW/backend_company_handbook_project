@@ -81,7 +81,7 @@ public class ArticleControllerTest {
 
     @Test
     @WithMockUser
-    public void testSetEditingStatus_Success() throws Exception {
+    public void testSetSubmitStatus_Success() throws Exception {
         when(articleService.createArticle(any(ArticleRequestDto.class))).thenReturn(article);
         when(articleMapper.mapToDto(any(Article.class))).thenReturn(articleResponseDto);
 
@@ -149,7 +149,7 @@ public class ArticleControllerTest {
 
     @Test
     @WithMockUser
-    public void testSetEditingStatus_NullTitle() throws Exception {
+    public void testSetSubmitStatus_NullTitle() throws Exception {
         String invalidArticleJson = "{\"title\": null, \"description\": \"Test Description\", \"content\": \"Test Content\", \"editedBy\": \"testUser\"}";
 
         mockMvc.perform(post("/articles")
@@ -184,7 +184,7 @@ public class ArticleControllerTest {
 
     @Test
     @WithMockUser
-    public void testSetEditingStatus_MissingTitle() throws Exception {
+    public void testSetSubmitStatus_MissingTitle() throws Exception {
         String invalidArticleJson = "{\"description\": \"Test Description\", \"content\": \"Test Content\", \"editedBy\": \"testUser\"}";
 
         mockMvc.perform(post("/articles")

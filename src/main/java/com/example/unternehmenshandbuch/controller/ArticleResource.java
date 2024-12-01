@@ -46,7 +46,7 @@ public interface ArticleResource {
     @PostMapping("/articles/{id}/{isEditable}")
     ResponseEntity<ArticleResponseDto> updateArticle(@PathVariable String id, @Valid @RequestBody ArticleRequestDto articleRequestDto, @RequestParam Integer version, @PathVariable Boolean isEditable);
 
-    @Operation(summary = "Seapproval status of an article")
+    @Operation(summary = "Set approval status of an article")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Article approval status updated", content = @Content(schema = @Schema(implementation = ArticleResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "Invalid approval status", content = @Content),
@@ -98,6 +98,8 @@ public interface ArticleResource {
     ResponseEntity<ArticleResponseDto> getArticleByPublicIdAndVersion(@PathVariable String publicId, @PathVariable Integer version);
 
     @PostMapping("/articles/submitting")
-    ResponseEntity<ArticleResponseDto> setEditingStatus(String publicId, @Valid @RequestBody ArticleRequestDto articleRequestDto);
+    ResponseEntity<ArticleResponseDto> setSubmitStatus(@Valid @RequestBody ArticleRequestDto articleRequestDto);
 
+    @PostMapping("/articles/decline/{publicId}/{status}")
+    ResponseEntity<ArticleResponseDto> declineArticle(@PathVariable String publicId, @PathVariable String status);
 }

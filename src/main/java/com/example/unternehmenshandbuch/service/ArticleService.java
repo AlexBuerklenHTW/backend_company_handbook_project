@@ -29,7 +29,7 @@ public interface ArticleService {
     Article approveArticle(String publicId, ArticleRequestDto articleDto);
 
     @Transactional
-    Article setEditingStatus(String publicId, ArticleRequestDto articleDto);
+    Article setSubmitStatus(ArticleRequestDto articleDto);
 
 //    @Transactional(readOnly = true)
 //    List<Article> getArticlesByRoleAndStatus(String publicId, String role);
@@ -51,4 +51,6 @@ public interface ArticleService {
 
     @Transactional(readOnly = true)
     Article getArticleByPublicIdAndVersionAndStatus(String publicId, Integer version, Article.ArticleStatus status);
+
+    Article declineArticleByPublicIdAndStatus(String publicId, Article.ArticleStatus status);
 }
