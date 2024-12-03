@@ -58,12 +58,6 @@ public class ArticleController implements ArticleResource {
         return ResponseEntity.ok(articleMapper.mapToDto(updatedArticle));
     }
 
-//    @Override
-//    public ResponseEntity<List<ArticleResponseDto>> getArticlesByStatusAndRole(String publicId, String role) {
-//        List<Article> articles = articleService.getArticlesByRoleAndStatus(publicId, role);
-//        return ResponseEntity.ok(articleMapper.mapToDtoList(articles));
-//    }
-
     @Override
     public ResponseEntity<List<ArticleResponseDto>> getArticlesEditedByUser(String username) {
         List<Article> articles = articleService.getArticlesByUserAndStatus(username, Article.ArticleStatus.EDITING);

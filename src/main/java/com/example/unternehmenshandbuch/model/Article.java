@@ -53,12 +53,4 @@ public class Article {
 
     @Column
     private Boolean isSubmitted;
-
-
-//    @PrePersist
-//    protected void onCreate() {
-//        if (this.publicId == null) {
-//            this.publicId = UUID.randomUUID().toString();
-//        }
-//    }
 }
