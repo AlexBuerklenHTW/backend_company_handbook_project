@@ -6,7 +6,9 @@ CREATE TABLE IF NOT EXISTS articles (
     content TEXT NOT NULL,
     version INTEGER,
     status VARCHAR(255) NOT NULL,
-    edited_by VARCHAR(255)
+    edited_by VARCHAR(255),
+    is_editable BOOLEAN NOT NULL,
+    is_submitted BOOLEAN NOT NULL
     );
 
 CREATE  TABLE IF NOT EXISTS app_user

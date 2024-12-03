@@ -80,15 +80,15 @@ public class ArticleRepositoryIntegrationTest {
 		assertThat(fetchedArticle.get().getId()).isEqualTo(article1.getId());
 	}
 
-	@Test
-	public void testFindFirstByPublicId() {
-		String publicId = article1.getPublicId();
-
-		Optional<Article> fetchedArticle = articleRepository.findFirstByPublicId(publicId);
-
-		assertThat(fetchedArticle).isPresent();
-		assertThat(fetchedArticle.get().getPublicId()).isEqualTo(publicId);
-	}
+//	@Test
+//	public void testFindFirstByPublicId() {
+//		String publicId = article1.getPublicId();
+//
+//		Optional<Article> fetchedArticle = articleRepository.findFirstByPublicId(publicId);
+//
+//		assertThat(fetchedArticle).isPresent();
+//		assertThat(fetchedArticle.get().getPublicId()).isEqualTo(publicId);
+//	}
 
 	@Test
 	public void testFindAll() {

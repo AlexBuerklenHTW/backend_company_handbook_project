@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Entity
 @Table(name = "articles")
 @Data
@@ -19,7 +17,9 @@ public class Article {
     public enum ArticleStatus {
         EDITING,
         SUBMITTED,
-        APPROVED
+        APPROVED,
+        DECLINED,
+        OTHER_SUBMITTED
     }
 
     @Id
@@ -48,12 +48,17 @@ public class Article {
     @Column()
     private String editedBy;
 
+    @Column
+    private Boolean isEditable;
+
+    @Column
+    private Boolean isSubmitted;
 
 
-    @PrePersist
-    protected void onCreate() {
-        if (this.publicId == null) {
-            this.publicId = UUID.randomUUID().toString();
-        }
-    }
+//    @PrePersist
+//    protected void onCreate() {
+//        if (this.publicId == null) {
+//            this.publicId = UUID.randomUUID().toString();
+//        }
+//    }
 }

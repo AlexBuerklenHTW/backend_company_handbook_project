@@ -1,11 +1,9 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:latest
     container_name: postgres-db
     environment:
-      POSTGRES_DB: company_manual_project_db
+      POSTGRES_DB: postgres
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
     ports:

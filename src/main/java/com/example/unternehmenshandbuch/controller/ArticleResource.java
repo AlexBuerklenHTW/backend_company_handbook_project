@@ -1,7 +1,6 @@
 package com.example.unternehmenshandbuch.controller;
 
 import com.example.unternehmenshandbuch.controller.dto.ArticleResponseDto;
-import com.example.unternehmenshandbuch.service.dto.ApprovalRequestDto;
 import com.example.unternehmenshandbuch.service.dto.ArticleRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+//TODO: API-Spezifikationen erweitern/ergänzen
+
 @Validated
 public interface ArticleResource {
 
@@ -26,15 +27,6 @@ public interface ArticleResource {
     })
     @PostMapping("/articles")
     ResponseEntity<ArticleResponseDto> createArticle(@Valid @RequestBody ArticleRequestDto articleRequestDto);
-
-    @Operation(summary = "Get article by ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Article found", content = @Content(schema = @Schema(implementation = ArticleResponseDto.class))),
-            @ApiResponse(responseCode = "404", description = "Article not found", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @GetMapping("articles/{publicId}")
-    ResponseEntity<ArticleResponseDto> getArticleById(@PathVariable String publicId);
 
     @Operation(summary = "Get all articles")
     @ApiResponses(value = {
@@ -51,8 +43,8 @@ public interface ArticleResource {
             @ApiResponse(responseCode = "404", description = "Article not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @PutMapping("/articles/{id}")
-    ResponseEntity<ArticleResponseDto> updateArticle(@PathVariable String id, @Valid @RequestBody ArticleRequestDto articleRequestDto);
+    @PostMapping("/articles/{id}/{isEditable}")
+    ResponseEntity<ArticleResponseDto> updateArticle(@PathVariable String id, @Valid @RequestBody ArticleRequestDto articleRequestDto, @RequestParam Integer version, @PathVariable Boolean isEditable);
 
     @Operation(summary = "Set approval status of an article")
     @ApiResponses(value = {
@@ -61,17 +53,8 @@ public interface ArticleResource {
             @ApiResponse(responseCode = "404", description = "Article not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @PutMapping("/articles/{id}/approval")
-    ResponseEntity<ArticleResponseDto> setApprovalStatus(@PathVariable String id, @RequestBody ApprovalRequestDto approvalRequestDto);
-
-    @Operation(summary = "Get all versions of an article by public ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "List of article versions", content = @Content(schema = @Schema(implementation = ArticleResponseDto.class))),
-            @ApiResponse(responseCode = "404", description = "Article not found", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @GetMapping("/articles/{publicId}/versions")
-    ResponseEntity<List<ArticleResponseDto>> getArticlesByStatusAndRole(@PathVariable String publicId, @RequestParam String role);
+    @PostMapping("/articles/approval/{publicId}")
+    ResponseEntity<ArticleResponseDto> approveArticle(@PathVariable String publicId, @RequestBody ArticleRequestDto articleRequestDto);
 
     @Operation(summary = "Get all approved articles")
     @ApiResponses(value = {
@@ -79,7 +62,7 @@ public interface ArticleResource {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping("/articles/approved")
-    ResponseEntity<List<ArticleResponseDto>> getApprovedArticles();
+    ResponseEntity<List<ArticleResponseDto>> getArticlesApproved();
 
     @Operation(summary = "Get the latest version of an article by public ID")
     @ApiResponses(value = {
@@ -88,7 +71,7 @@ public interface ArticleResource {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping("/articles/{publicId}/latest")
-    ResponseEntity<ArticleResponseDto> getLatestArticleByPublicId(@PathVariable String publicId);
+    ResponseEntity<ArticleResponseDto> getLatestArticleByPublicIdAndStatusEditedBy(@PathVariable String publicId);
 
     @Operation(summary = "Get articles being edited by a specific user")
     @ApiResponses(value = {
@@ -99,7 +82,24 @@ public interface ArticleResource {
     @GetMapping("/articles/user/{username}")
     ResponseEntity<List<ArticleResponseDto>> getArticlesEditedByUser(@PathVariable String username);
 
-    @GetMapping("/articles/{publicId}/latest-submitted")
-    ResponseEntity<ArticleResponseDto> getLatestSubmittedArticleByPublicId(@PathVariable String publicId);
+    @GetMapping("/articles/{publicId}/approvedArticleByPublicIdAndLastVersion")
+    ResponseEntity<ArticleResponseDto> getApprovedArticleByPublicIdAndLastVersion(@PathVariable String publicId);
 
+    @GetMapping("/articles/{publicId}/{status}/submittedArticleByPublicId")
+    ResponseEntity<ArticleResponseDto> getSubmittedArticleByPublicIdAndStatus(@PathVariable String publicId, @PathVariable String status);
+
+    @GetMapping("/articles/{publicId}/approvedArticlesByPublicId/{status}")
+    ResponseEntity<List<ArticleResponseDto>> getAllApprovedArticlesByPublicId(@PathVariable String publicId, @PathVariable String status);
+
+    @GetMapping("/articles/{publicId}/version/{version}/{status}")
+    ResponseEntity<ArticleResponseDto> getArticleByPublicIdAndVersionAndStatus(@PathVariable String publicId, @PathVariable Integer version, @PathVariable String status);
+
+    @GetMapping("/articles/{publicId}/{version}")
+    ResponseEntity<ArticleResponseDto> getArticleByPublicIdAndVersion(@PathVariable String publicId, @PathVariable Integer version);
+
+    @PostMapping("/articles/submitting")
+    ResponseEntity<ArticleResponseDto> setSubmitStatus(@Valid @RequestBody ArticleRequestDto articleRequestDto);
+
+    @PostMapping("/articles/decline/{publicId}/{status}")
+    ResponseEntity<ArticleResponseDto> declineArticle(@PathVariable String publicId, @PathVariable String status);
 }
