@@ -49,57 +49,6 @@ public class ArticleServiceImplTest {
                 .build();
     }
 
-
-//    @Test
-//    public void testGetAllArticles_Success() {
-//        when(repository.findByStatusList(Article.ArticleStatus.SUBMITTED)).thenReturn(Collections.singletonList(article));
-//
-//        List<Article> articles = articleService.getArticlesByStatus();
-//
-//        assertThat(articles).isNotEmpty();
-//        assertThat(articles).hasSize(1);
-//        assertThat(articles.get(0)).isEqualTo(article);
-//    }
-//
-//    @Test
-//    public void testGetApprovedArticles_Success() {
-//        article.setStatus(Article.ArticleStatus.APPROVED);
-//        when(repository.findByStatusList(Article.ArticleStatus.APPROVED)).thenReturn(Collections.singletonList(article));
-//
-//        List<Article> articles = articleService.getApprovedArticles();
-//
-//        assertThat(articles).isNotEmpty();
-//        assertThat(articles).hasSize(1);
-//        assertThat(articles.get(0)).isEqualTo(article);
-//    }
-
-
-//    @Test
-//    public void testSetApprovalStatus_Success() {
-//        Article approvedArticle = Article.builder()
-//                .publicId("test-id")
-//                .title("Test Title")
-//                .description("Test Description")
-//                .content("Test Content")
-//                .version(1)
-//                .status(Article.ArticleStatus.APPROVED)
-//                .editedBy("user")
-//                .build();
-//
-//        when(repository.findByPublicIdAndEditedByAndVersionNull(anyString(), anyString())).thenReturn(Optional.of(article));
-//        when(repository.save(any(Article.class))).thenReturn(approvedArticle);
-//
-//        Article result = articleService.setApprovalStatus("test-id", "APPROVED", 1, "user");
-//
-//        assertThat(result).isNotNull();
-//        assertThat(result.getStatus()).isEqualTo(Article.ArticleStatus.APPROVED);
-//
-//        verify(repository).save(articleCaptor.capture());
-//        Article savedArticle = articleCaptor.getValue();
-//        assertThat(savedArticle.getStatus()).isEqualTo(Article.ArticleStatus.APPROVED);
-//    }
-
-
     @Test
     public void testGetLatestArticleByPublicId_NotFound() {
         when(repository.findFirstByPublicIdOrderByVersionDesc(anyString())).thenReturn(Optional.empty());
@@ -119,18 +68,6 @@ public class ArticleServiceImplTest {
         assertThat(articles).hasSize(1);
         assertThat(articles.get(0)).isEqualTo(article);
     }
-
-//    @Test
-//    public void testGetArticlesByRoleAndStatus_Success() {
-//        when(repository.findByPublicIdAndStatus(anyString(), any(Article.ArticleStatus.class))).thenReturn(Collections.singletonList(article));
-//
-//        List<Article> articles = articleService.getArticlesByRoleAndStatus("test-id", "ADMIN");
-//
-//        assertThat(articles).isNotEmpty();
-//        assertThat(articles).hasSize(1);
-//        assertThat(articles.get(0)).isEqualTo(article);
-//    }
-
 
     @Test
     public void testGetApprovedArticleByPublicIdAndLastVersion_Success() {
@@ -165,76 +102,6 @@ public class ArticleServiceImplTest {
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("No approved article found with publicId: non-existent-id");
     }
-
-//    @Test
-//    public void testGetAllApprovedAndDeclinedArticlesByPublicId_Success() {
-//        Article approvedArticle1 = Article.builder()
-//                .publicId("test-id")
-//                .title("Approved Title 1")
-//                .description("Approved Description 1")
-//                .content("Approved Content 1")
-//                .version(1)
-//                .status(Article.ArticleStatus.APPROVED)
-//                .editedBy("user")
-//                .build();
-//
-//        Article approvedArticle2 = Article.builder()
-//                .publicId("test-id")
-//                .title("Approved Title 2")
-//                .description("Approved Description 2")
-//                .content("Approved Content 2")
-//                .version(2)
-//                .status(Article.ArticleStatus.APPROVED)
-//                .editedBy("user")
-//                .build();
-//
-//        when(repository.findAllApprovedArticlesByPublicId("test-id")).thenReturn(List.of(approvedArticle1, approvedArticle2));
-//
-//        List<Article> result = articleService.getAllApprovedAndDeclinedArticlesByPublicId("test-id");
-//
-//        assertThat(result).isNotEmpty();
-//        assertThat(result).hasSize(2);
-//        assertThat(result.get(0).getTitle()).isEqualTo("Approved Title 1");
-//        assertThat(result.get(1).getTitle()).isEqualTo("Approved Title 2");
-//    }
-//
-//    @Test
-//    public void testGetAllApprovedAndDeclinedArticlesByPublicId_EmptyList() {
-//        when(repository.findAllApprovedArticlesByPublicId("test-id")).thenReturn(Collections.emptyList());
-//
-//        List<Article> result = articleService.getAllApprovedAndDeclinedArticlesByPublicId("test-id");
-//
-//        assertThat(result).isEmpty();
-//    }
-
-//    @Test
-//    public void testGetArticlesByRoleAndStatus_UserRole_Success() {
-//        when(repository.findByPublicIdAndVersionNotNull(anyString())).thenReturn(Collections.singletonList(article));
-//
-//        List<Article> articles = articleService.getArticlesByRoleAndStatus("test-id", "ROLE_USER");
-//
-//        assertThat(articles).isNotEmpty();
-//        assertThat(articles).hasSize(1);
-//        assertThat(articles.get(0)).isEqualTo(article);
-//
-//        verify(repository).findByPublicIdAndVersionNotNull("test-id");
-//        verify(repository, never()).findByPublicIdAndStatus(anyString(), any(Article.ArticleStatus.class));
-//    }
-//
-//    @Test
-//    public void testGetArticlesByRoleAndStatus_OtherRole_Success() {
-//        when(repository.findByPublicIdAndStatus(anyString(), any(Article.ArticleStatus.class)))
-//                .thenReturn(Collections.singletonList(article));
-//
-//        List<Article> articles = articleService.getArticlesByRoleAndStatus("test-id", "ADMIN");
-//
-//        assertThat(articles).isNotEmpty();
-//        assertThat(articles).hasSize(1);
-//        assertThat(articles.get(0)).isEqualTo(article);
-//
-//        verify(repository).findByPublicIdAndStatus("test-id", Article.ArticleStatus.SUBMITTED);
-//        verify(repository, never()).findByPublicIdAndVersionNotNull(anyString());
-//    }
 
     @Test
     public void testGetArticleByPublicIdAndVersion_AndStatus_Success() {
@@ -341,7 +208,6 @@ public class ArticleServiceImplTest {
         String publicId = "test-id";
         Integer version = 1;
 
-        // Erstellen eines Testartikels
         Article article = new Article();
         article.setPublicId(publicId);
         article.setVersion(version);
@@ -350,13 +216,10 @@ public class ArticleServiceImplTest {
         article.setContent("Test Content");
         article.setStatus(Article.ArticleStatus.EDITING);
 
-        // Mocking des repository Verhaltens
         when(repository.findByPublicIdAndVersion(publicId, version)).thenReturn(Optional.of(article));
 
-        // Aufruf der Methode
         Article result = articleService.getArticleByPublicIdAndVersion(publicId, version);
 
-        // Überprüfen der Rückgabewerte
         assertThat(result).isNotNull();
         assertThat(result.getPublicId()).isEqualTo(publicId);
         assertThat(result.getVersion()).isEqualTo(version);

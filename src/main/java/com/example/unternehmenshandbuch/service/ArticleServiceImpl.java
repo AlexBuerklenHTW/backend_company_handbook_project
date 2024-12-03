@@ -123,8 +123,6 @@ public class ArticleServiceImpl implements ArticleService {
         ArticleValidationException.validateArticleRequestDto(articleRequestDto);
 
         Article existingArticle = repository.findByPublicIdAndStatus(publicId, Article.ArticleStatus.SUBMITTED);
-//        Article existingArticle = repository.findByPublicIdAndVersion(publicId, articleRequestDto.getVersion())
-//                .orElseThrow(() -> new ResourceNotFoundException("Article not found with PublicId: " + publicId));
 
         Integer newVersion = articleRequestDto.getVersion() + 1;
 

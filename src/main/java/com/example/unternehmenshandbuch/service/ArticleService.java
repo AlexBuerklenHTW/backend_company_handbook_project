@@ -31,9 +31,6 @@ public interface ArticleService {
     @Transactional
     Article setSubmitStatus(ArticleRequestDto articleDto);
 
-//    @Transactional(readOnly = true)
-//    List<Article> getArticlesByRoleAndStatus(String publicId, String role);
-
     @Transactional(readOnly = true)
     List<Article> getArticlesByUserAndStatus(String username, Article.ArticleStatus status);
 
