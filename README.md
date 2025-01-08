@@ -6,12 +6,12 @@ can review those articles and approve or deny them.
 **2.) What requirements are needed to build the backend?**
 
 - Java 17
-- Docker
-- Maven
+- Docker 27.4.0
+- Maven 3.9.6
 
 **3.) How to start the backend?**
 
-3.1.) First you need to run, to start the ```docker-compose.yml```:
+3.1.) First you need to run ```docker-compose.yml```, to create a docker image and start the docker container:
 ```shell
 docker compose up
 ```
