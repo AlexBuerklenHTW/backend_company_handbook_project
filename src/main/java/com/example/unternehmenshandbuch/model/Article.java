@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.Instant;
 
 @Entity
 @Table(name = "articles")
@@ -53,4 +56,7 @@ public class Article {
 
     @Column
     private Boolean isSubmitted;
+
+    @CreationTimestamp
+    private Instant createdAt;
 }
