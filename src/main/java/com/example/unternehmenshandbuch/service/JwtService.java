@@ -18,7 +18,7 @@ public class JwtService {
 
 	private static final String SECRET = "AB8C7791F32DACCD488440C0F46F4FF81ACE98F82D91B210550A33DF5C8E593D25441CF04EE6A4280A8D40815DFE906D568D33850DC81AFBD01C6C3ABD8271F6";
 
-	private static final long EXPIRATION_TIME = TimeUnit.MINUTES.toMillis(30);
+	private static final long EXPIRATION_TIME = TimeUnit.MINUTES.toMillis(120);
 
 	public String generateToken(UserDetails userDetails) {
 		Map<String, Object> claims = new HashMap<>();
