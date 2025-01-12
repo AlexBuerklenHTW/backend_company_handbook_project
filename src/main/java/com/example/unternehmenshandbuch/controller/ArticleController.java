@@ -1,6 +1,7 @@
 package com.example.unternehmenshandbuch.controller;
 
 import com.example.unternehmenshandbuch.controller.dto.ArticleResponseDto;
+import com.example.unternehmenshandbuch.controller.dto.ArticleStatusEditingAndVersionDto;
 import com.example.unternehmenshandbuch.service.dto.ArticleRequestDto;
 import com.example.unternehmenshandbuch.mapper.ArticleMapper;
 import com.example.unternehmenshandbuch.model.Article;
@@ -108,5 +109,11 @@ public class ArticleController implements ArticleResource {
         Article.ArticleStatus statusInEnum = Article.ArticleStatus.valueOf(status.toUpperCase());
         Article article = articleService.declineArticleByPublicIdAndStatus(publicId, statusInEnum);
         return ResponseEntity.ok(articleMapper.mapToDto(article));
+    }
+
+    @Override
+    public ResponseEntity<ArticleStatusEditingAndVersionDto> getEditedByWithStatusEditingAndVersion(String publicId) {
+        Article article = articleService.getEditedByWithStatusEditingAndVersion(publicId);
+        return ResponseEntity.ok(articleMapper.mapToStatusEditingAndVersion(article));
     }
 }

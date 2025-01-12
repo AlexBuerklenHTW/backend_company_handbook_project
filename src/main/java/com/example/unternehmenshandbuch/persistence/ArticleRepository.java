@@ -35,4 +35,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     List<Article> findAllApprovedArticlesByPublicId(@Param("publicId") String publicId, @Param("status") Article.ArticleStatus status);
 
     Optional<Article> findArticleByPublicIdAndVersionAndStatus(String publicId, Integer version, Article.ArticleStatus status);
+
+    @Query("SELECT a FROM Article a WHERE a.publicId = :publicId AND a.status = 'EDITING'")
+    Article getEditedByWithStatusEditingAndVersion(String publicId);
 }

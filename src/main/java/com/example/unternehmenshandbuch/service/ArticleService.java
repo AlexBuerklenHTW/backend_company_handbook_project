@@ -50,4 +50,7 @@ public interface ArticleService {
     Article getArticleByPublicIdAndVersionAndStatus(String publicId, Integer version, Article.ArticleStatus status);
 
     Article declineArticleByPublicIdAndStatus(String publicId, Article.ArticleStatus status);
+
+    @Transactional(readOnly = true)
+    Article getEditedByWithStatusEditingAndVersion(String publicId);
 }

@@ -1,6 +1,7 @@
 package com.example.unternehmenshandbuch.controller;
 
 import com.example.unternehmenshandbuch.controller.dto.ArticleResponseDto;
+import com.example.unternehmenshandbuch.controller.dto.ArticleStatusEditingAndVersionDto;
 import com.example.unternehmenshandbuch.service.dto.ArticleRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -142,4 +143,14 @@ public interface ArticleResource {
     })
     @PostMapping("/articles/decline/{publicId}/{status}")
     ResponseEntity<ArticleResponseDto> declineArticle(@PathVariable String publicId, @PathVariable String status);
+
+    @Operation(summary = "Get the editor of an article with status 'EDITING'")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Editor retrieved successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Article not found", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
+    @GetMapping("/articles/editedByWithStatusEditing/{publicId}")
+    ResponseEntity<ArticleStatusEditingAndVersionDto> getEditedByWithStatusEditingAndVersion(@PathVariable String publicId);
 }

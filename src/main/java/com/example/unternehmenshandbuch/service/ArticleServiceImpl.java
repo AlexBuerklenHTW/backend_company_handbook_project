@@ -82,7 +82,6 @@ public class ArticleServiceImpl implements ArticleService {
                     .build();
 
             Article articleWithStatusApproved = repository.findByPublicIdAndStatusAndIsEditableTrue(publicId, Article.ArticleStatus.APPROVED);
-            System.out.println(articleWithStatusApproved);
             articleWithStatusApproved.setIsEditable(false);
 
             return repository.save(article);
@@ -201,11 +200,15 @@ public class ArticleServiceImpl implements ArticleService {
         ArticleValidationException.validateId(publicId);
         Article articleWithStatusSubmitted = repository.findByPublicIdAndStatus(publicId, status);
 
-        System.out.println("articleWithStatusSubmitted: " + articleWithStatusSubmitted);
-
         articleWithStatusSubmitted.setStatus(Article.ArticleStatus.EDITING);
         articleWithStatusSubmitted.setIsSubmitted(false);
 
         return repository.save(articleWithStatusSubmitted);
+    }
+
+    @Override
+    public Article getEditedByWithStatusEditingAndVersion(String publicId) {
+        ArticleValidationException.validateId(publicId);
+        return repository.getEditedByWithStatusEditingAndVersion(publicId);
     }
 }

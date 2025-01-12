@@ -1,6 +1,7 @@
 package com.example.unternehmenshandbuch.mapper;
 
 import com.example.unternehmenshandbuch.controller.dto.ArticleResponseDto;
+import com.example.unternehmenshandbuch.controller.dto.ArticleStatusEditingAndVersionDto;
 import com.example.unternehmenshandbuch.model.Article;
 import org.springframework.stereotype.Component;
 
@@ -36,5 +37,16 @@ public class ArticleMapper {
         return articles.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
+    }
+
+    public ArticleStatusEditingAndVersionDto mapToStatusEditingAndVersion(Article article) {
+        if (article == null) {
+            return null;
+        }
+
+        return ArticleStatusEditingAndVersionDto.builder()
+                .editedBy(article.getEditedBy())
+                .version(article.getVersion())
+                .build();
     }
 }
