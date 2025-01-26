@@ -34,7 +34,7 @@ public interface ArticleService {
     @Transactional(readOnly = true)
     List<Article> getArticlesByUserAndStatus(String username, Article.ArticleStatus status);
 
-    @Transactional
+    @Transactional(readOnly = true)
     Article getLatestArticleByPublicId(String publicId);
 
     @Transactional(readOnly = true)
@@ -49,7 +49,8 @@ public interface ArticleService {
     @Transactional(readOnly = true)
     Article getArticleByPublicIdAndVersionAndStatus(String publicId, Integer version, Article.ArticleStatus status);
 
-    Article declineArticleByPublicIdAndStatus(String publicId, Article.ArticleStatus status);
+    @Transactional
+    Article declineArticleByPublicIdAndStatus(String publicId, Article.ArticleStatus status, String denyText);
 
     @Transactional(readOnly = true)
     Article getEditedByWithStatusEditingAndVersion(String publicId);

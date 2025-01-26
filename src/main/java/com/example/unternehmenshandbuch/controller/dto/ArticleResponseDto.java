@@ -22,4 +22,5 @@ public class ArticleResponseDto {
     private List<ArticleResponseDto> versions;
     private Boolean isEditable;
     private Boolean isSubmitted;
+    private String denyText;
 }

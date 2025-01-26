@@ -26,6 +26,7 @@ public class ArticleMapper {
                 .editedBy(article.getEditedBy())
                 .isEditable(article.getIsEditable())
                 .isSubmitted(article.getIsSubmitted())
+                .denyText(article.getDenyText())
                 .build();
     }
 

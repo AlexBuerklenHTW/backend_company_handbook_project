@@ -141,8 +141,8 @@ public interface ArticleResource {
             @ApiResponse(responseCode = "404", description = "Article not found", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @PostMapping("/articles/decline/{publicId}/{status}")
-    ResponseEntity<ArticleResponseDto> declineArticle(@PathVariable String publicId, @PathVariable String status);
+    @PostMapping("/articles/decline/{publicId}/{status}/{denyText}")
+    ResponseEntity<ArticleResponseDto> declineArticle(@PathVariable String publicId, @PathVariable String status, @PathVariable String denyText);
 
     @Operation(summary = "Get the editor of an article with status 'EDITING'")
     @ApiResponses(value = {

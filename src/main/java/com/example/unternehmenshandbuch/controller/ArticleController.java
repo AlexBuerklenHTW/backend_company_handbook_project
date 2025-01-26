@@ -105,9 +105,9 @@ public class ArticleController implements ArticleResource {
     }
 
     @Override
-    public ResponseEntity<ArticleResponseDto> declineArticle(String publicId, String status) {
+    public ResponseEntity<ArticleResponseDto> declineArticle(String publicId, String status, String denyText) {
         Article.ArticleStatus statusInEnum = Article.ArticleStatus.valueOf(status.toUpperCase());
-        Article article = articleService.declineArticleByPublicIdAndStatus(publicId, statusInEnum);
+        Article article = articleService.declineArticleByPublicIdAndStatus(publicId, statusInEnum, denyText);
         return ResponseEntity.ok(articleMapper.mapToDto(article));
     }
 

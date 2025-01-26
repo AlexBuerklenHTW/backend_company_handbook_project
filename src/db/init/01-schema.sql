@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS articles (
     status VARCHAR(255) NOT NULL,
     edited_by VARCHAR(255),
     is_editable BOOLEAN NOT NULL,
-    is_submitted BOOLEAN NOT NULL
+    is_submitted BOOLEAN NOT NULL,
+    deny_text VARCHAR(255) NULL
     );
 
 CREATE  TABLE IF NOT EXISTS app_user

@@ -20,9 +20,7 @@ public class Article {
     public enum ArticleStatus {
         EDITING,
         SUBMITTED,
-        APPROVED,
-        DECLINED,
-        OTHER_SUBMITTED
+        APPROVED
     }
 
     @Id
@@ -56,6 +54,9 @@ public class Article {
 
     @Column
     private Boolean isSubmitted;
+
+    @Column()
+    private String denyText;
 
     @CreationTimestamp
     private Instant createdAt;
