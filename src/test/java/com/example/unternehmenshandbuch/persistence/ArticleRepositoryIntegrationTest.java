@@ -23,6 +23,7 @@ public class ArticleRepositoryIntegrationTest {
 		articleRepository.deleteAll();
 
 		article1 = Article.builder()
+				.publicId("1")
 				.title("Title1")
 				.description("Description1")
 				.content("Content1")
@@ -32,6 +33,7 @@ public class ArticleRepositoryIntegrationTest {
 				.build();
 
 		Article article2 = Article.builder()
+				.publicId("1")
 				.title("Title2")
 				.description("Description2")
 				.content("Content2")
@@ -44,6 +46,7 @@ public class ArticleRepositoryIntegrationTest {
 		articleRepository.save(article2);
 
 		Article article1Version2 = Article.builder()
+				.publicId("1")
 				.title("Title1 - Version 2")
 				.description("Description1 - Version 2")
 				.content("Content1 - Version 2")
@@ -58,6 +61,7 @@ public class ArticleRepositoryIntegrationTest {
 	@Test
 	public void testSaveArticle() {
 		Article article = Article.builder()
+				.publicId("1")
 				.title("New Title")
 				.description("New Description")
 				.content("New Content")
@@ -83,7 +87,7 @@ public class ArticleRepositoryIntegrationTest {
 	@Test
 	public void testFindAll() {
 		Iterable<Article> articles = articleRepository.findAll();
-		assertThat(articles).hasSize(3);  // 2 main articles + 1 version
+		assertThat(articles).hasSize(3);
 	}
 
 	@Test

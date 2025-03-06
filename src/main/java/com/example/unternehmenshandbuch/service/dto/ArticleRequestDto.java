@@ -13,8 +13,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class ArticleRequestDto {
 
-	//Todo: Annotation aktualisieren
-
 	private String publicId;
 
 	@Size(max = 500, message = "Description must be less than 500 characters")

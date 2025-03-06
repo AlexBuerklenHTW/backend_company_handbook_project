@@ -11,11 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class ArticleValidationExceptionTest {
 
 	@Test
-	public void testValidateArticleRequestDto_NullDto() {
-		assertThrows(ArticleValidationException.class, () -> ArticleValidationException.validateArticleRequestDto(null));
-	}
-
-	@Test
 	public void testValidateId_ValidId() {
 		assertDoesNotThrow(() -> ArticleValidationException.validateId("valid-id"));
 	}

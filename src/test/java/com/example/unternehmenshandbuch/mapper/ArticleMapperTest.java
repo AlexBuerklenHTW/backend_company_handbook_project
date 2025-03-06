@@ -1,6 +1,7 @@
 package com.example.unternehmenshandbuch.mapper;
 
 import com.example.unternehmenshandbuch.controller.dto.ArticleResponseDto;
+import com.example.unternehmenshandbuch.controller.dto.ArticleStatusEditingAndVersionDto;
 import com.example.unternehmenshandbuch.model.Article;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ public class ArticleMapperTest {
 				.version(1)
 				.status(Article.ArticleStatus.EDITING)
 				.editedBy("testUser")
+				.isSubmitted(true)
 				.build();
 	}
 
@@ -48,6 +50,7 @@ public class ArticleMapperTest {
 		assertThat(dto.getVersion()).isEqualTo(1);
 		assertThat(dto.getStatus()).isEqualTo(Article.ArticleStatus.EDITING);
 		assertThat(dto.getEditedBy()).isEqualTo("testUser");
+		assertThat(dto.getIsSubmitted()).isEqualTo(true);
 	}
 
 	@Test
@@ -78,5 +81,21 @@ public class ArticleMapperTest {
 		assertThat(dto.getVersion()).isEqualTo(1);
 		assertThat(dto.getStatus()).isEqualTo(Article.ArticleStatus.EDITING);
 		assertThat(dto.getEditedBy()).isEqualTo("testUser");
+		assertThat(dto.getIsSubmitted()).isEqualTo(true);
 	}
+	@Test
+	public void testMapToStatusEditingAndVersion_NullArticle() {
+		ArticleStatusEditingAndVersionDto dto = articleMapper.mapToStatusEditingAndVersion(null);
+		assertThat(dto).isNull();
+	}
+
+	@Test
+	public void testMapToStatusEditingAndVersion_ValidArticle() {
+		ArticleStatusEditingAndVersionDto dto = articleMapper.mapToStatusEditingAndVersion(article);
+
+		assertThat(dto).isNotNull();
+		assertThat(dto.getEditedBy()).isEqualTo("testUser");
+		assertThat(dto.getVersion()).isEqualTo(1);
+	}
+
 }
